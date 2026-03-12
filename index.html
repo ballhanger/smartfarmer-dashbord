@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - โครงการ Smart Farmer</title>
+    <title>Dashboard - โครงการ Smart Farmer 2569</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -45,22 +45,23 @@
         </header>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <div class="bg-indigo-50 rounded-2xl shadow-sm border border-indigo-100 p-6 flex items-center justify-between border-l-4 border-l-indigo-500">
-                <div>
-                    <p class="text-sm font-medium text-indigo-800/70 mb-1">เป้าหมายโครงการ (เฉพาะ KPI)</p>
-                    <h2 class="text-4xl font-bold text-indigo-950" id="kpi-target">-</h2>
+            <div class="bg-indigo-50 rounded-2xl shadow-sm border border-indigo-100 p-6 flex items-center justify-center relative border-l-4 border-l-indigo-500">
+                <div class="text-center z-10">
+                    <p class="text-sm font-bold text-indigo-800/70 mb-2">(เป้าหมายจาก พรบ.69 เฉพาะ KPI)</p>
+                    <h2 class="text-5xl font-extrabold text-indigo-950" id="kpi-target">-</h2>
                 </div>
-                <div class="bg-indigo-100 p-4 rounded-full">
-                    <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                <div class="bg-indigo-100 p-4 rounded-full absolute right-6 opacity-30 hidden sm:block">
+                    <svg class="w-10 h-10 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                 </div>
             </div>
-            <div class="bg-emerald-50 rounded-2xl shadow-sm border border-emerald-100 p-6 flex items-center justify-between border-l-4 border-l-emerald-500">
-                <div>
-                    <p class="text-sm font-medium text-emerald-800/70 mb-1">ผลการดำเนินงานสะสม (เฉพาะ KPI)</p>
-                    <h2 class="text-4xl font-bold text-emerald-950" id="kpi-actual">-</h2>
+
+            <div class="bg-emerald-50 rounded-2xl shadow-sm border border-emerald-100 p-6 flex items-center justify-center relative border-l-4 border-l-emerald-500">
+                <div class="text-center z-10">
+                    <p class="text-sm font-bold text-emerald-800/70 mb-2">ผลการดำเนินงานสะสม (เฉพาะ KPI)</p>
+                    <h2 class="text-5xl font-extrabold text-emerald-950" id="kpi-actual">-</h2>
                 </div>
-                <div class="bg-emerald-100 p-4 rounded-full">
-                    <svg class="w-8 h-8 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path></svg>
+                <div class="bg-emerald-100 p-4 rounded-full absolute right-6 opacity-30 hidden sm:block">
+                    <svg class="w-10 h-10 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path></svg>
                 </div>
             </div>
         </div>
@@ -69,7 +70,7 @@
             <div class="bg-purple-100 rounded-2xl shadow-md border border-purple-200 p-6 lg:col-span-1 flex flex-col justify-between">
                 <h3 class="text-lg font-bold mb-4 flex items-center text-purple-900">
                     <svg class="w-5 h-5 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path></svg>
-                    ภาพรวมตลอดโครงการ (ร้อยละ)
+                    ภาพรวมโครงการ
                 </h3>
                 <div class="flex-grow flex items-center justify-center my-6">
                     <div id="pie-chart" class="conic-chart w-56 h-56 rounded-full relative flex items-center justify-center shadow-inner" style="background: conic-gradient(#e2e8f0 0% 100%);">
@@ -80,8 +81,8 @@
                     </div>
                 </div>
                 <div class="mt-4 flex flex-col items-center text-center">
-                    <p class="text-sm text-purple-800 font-bold mb-2">สถานะ (เทียบแผนสะสมถึง Q<span id="display-quarter"></span>)</p>
-                    <div id="project-status" class="inline-flex items-center justify-center px-6 py-3 rounded-xl text-xl font-bold border-2 shadow-sm w-full sm:w-auto bg-white">
+                    <p class="text-sm text-purple-800 font-bold mb-2">สถานะโครงการล่าสุด (เทียบแผนสะสมถึงไตรมาส <span id="display-quarter"></span>)</p>
+                    <div id="project-status" class="inline-flex items-center justify-center px-4 py-3 rounded-xl text-lg sm:text-xl font-bold border-2 shadow-sm w-full bg-white">
                         กำลังโหลด...
                     </div>
                 </div>
@@ -186,9 +187,11 @@
 
         document.addEventListener('DOMContentLoaded', async () => {
             try {
+                // อัปเดตชื่อโครงการ
+                document.getElementById('project-name').textContent = "โครงการพัฒนาทักษะและแนวคิดผู้ประกอบการธุรกิจเกษตร (เกษตรกรปราดเปรื่อง (Smart Farmer)) ปีงบประมาณ 2569";
+
                 const rawData = await fetchCSVData(CSV_URL);
                 
-                // จัดเตรียม Array ดึงข้อมูลครบทุกไตรมาส
                 const activities = rawData.map((row, index) => {
                     return {
                         id: index + 1,
@@ -216,6 +219,7 @@
 
                 const totalTarget = kpiActivities.reduce((sum, act) => sum + act.target, 0);
                 const totalActual = kpiActivities.reduce((sum, act) => sum + act.actual, 0);
+                
                 // เปอร์เซ็นต์รวมตลอดโครงการ (แสดงที่วงกลม)
                 const percentCum = totalTarget > 0 ? ((totalActual / totalTarget) * 100).toFixed(2) : "0.00";
                 
@@ -254,10 +258,9 @@
                     else projectStatus = "❌ ยังไม่ดำเนินการ";
                 }
 
-                // การแสดงผล
-                document.getElementById('project-name').textContent = "โครงการพัฒนาทักษะและแนวคิดผู้ประกอบการธุรกิจเกษตร (Smart Farmer)";
-                document.getElementById('kpi-target').innerHTML = `${formatNum(totalTarget)} <span class="text-xl font-medium text-indigo-700/70">ราย</span>`;
-                document.getElementById('kpi-actual').innerHTML = `${formatNum(totalActual)} <span class="text-xl font-medium text-emerald-700/70">ราย</span>`;
+                // นำไปแสดงผล (ตัวเลขจัดกึ่งกลางสวยงาม)
+                document.getElementById('kpi-target').innerHTML = `${formatNum(totalTarget)} <span class="text-xl sm:text-2xl font-bold text-indigo-700/70 ml-1">ราย</span>`;
+                document.getElementById('kpi-actual').innerHTML = `${formatNum(totalActual)} <span class="text-xl sm:text-2xl font-bold text-emerald-700/70 ml-1">ราย</span>`;
                 
                 const pieChart = document.getElementById('pie-chart');
                 document.getElementById('pie-percent').textContent = percentCum + '%';
@@ -271,19 +274,31 @@
                     pieChart.style.background = `conic-gradient(${pieColor} 0% ${percentCum}%, #f1f5f9 ${percentCum}% 100%)`;
                 }, 100);
 
+                // 📌 อัปเดตข้อความสถานะให้มีเปอร์เซ็นต์ต่อท้าย
                 const statusEl = document.getElementById('project-status');
-                statusEl.textContent = projectStatus;
-                statusEl.className = `inline-flex items-center justify-center px-8 py-4 rounded-2xl text-2xl font-bold border-2 shadow-sm w-full sm:w-auto bg-white ${getStatusStyles(projectStatus)}`;
+                let displayStatusText = projectStatus;
+                if (currentPlanCum > 0) {
+                    displayStatusText = `${projectStatus} (${currentPercent.toFixed(2)}%)`;
+                }
+                statusEl.textContent = displayStatusText;
+                statusEl.className = `inline-flex items-center justify-center px-4 py-3 rounded-xl text-[17px] sm:text-[19px] font-bold border-2 shadow-sm w-full bg-white ${getStatusStyles(projectStatus)}`;
 
                 // ==========================================
-                // 2. กราฟแท่งรายไตรมาส (เปลี่ยนการแสดงผลตามไตรมาสปัจจุบันอัตโนมัติ)
+                // 2. กราฟแท่งรายไตรมาส (เพิ่มเปอร์เซ็นต์เหนือแท่งกราฟ)
                 // ==========================================
                 const colors = ['bg-[#0ea5e9]', 'bg-[#16a34a]', 'bg-[#8b5cf6]', 'bg-[#f59e0b]'];
+                
+                // คำนวณเปอร์เซ็นต์ของแต่ละไตรมาสเพื่อแสดง
+                const pctQ1 = planQ1 > 0 ? ((actualQ1 / planQ1) * 100).toFixed(2) : 0;
+                const pctQ2 = (planQ1 + planQ2) > 0 ? (((actualQ1 + actualQ2) / (planQ1 + planQ2)) * 100).toFixed(2) : 0;
+                const pctQ3 = (planQ1 + planQ2 + planQ3) > 0 ? (((actualQ1 + actualQ2 + actualQ3) / (planQ1 + planQ2 + planQ3)) * 100).toFixed(2) : 0;
+                const pctQ4 = (planQ1 + planQ2 + planQ3 + planQ4) > 0 ? (((actualQ1 + actualQ2 + actualQ3 + actualQ4) / (planQ1 + planQ2 + planQ3 + planQ4)) * 100).toFixed(2) : 0;
+
                 const qData = [
-                    { name: 'ไตรมาส 1', plan: planQ1, actual: actualQ1, showActual: currentQuarter >= 1, actualColor: colors[0] },
-                    { name: 'ไตรมาส 2', plan: planQ1 + planQ2, actual: actualQ1 + actualQ2, showActual: currentQuarter >= 2, actualColor: colors[1] },
-                    { name: 'ไตรมาส 3', plan: planQ1 + planQ2 + planQ3, actual: actualQ1 + actualQ2 + actualQ3, showActual: currentQuarter >= 3, actualColor: colors[2] },
-                    { name: 'ไตรมาส 4', plan: planQ1 + planQ2 + planQ3 + planQ4, actual: actualQ1 + actualQ2 + actualQ3 + actualQ4, showActual: currentQuarter >= 4, actualColor: colors[3] }
+                    { name: 'ไตรมาส 1', plan: planQ1, actual: actualQ1, showActual: currentQuarter >= 1, actualColor: colors[0], pct: pctQ1 },
+                    { name: 'ไตรมาส 2', plan: planQ1 + planQ2, actual: actualQ1 + actualQ2, showActual: currentQuarter >= 2, actualColor: colors[1], pct: pctQ2 },
+                    { name: 'ไตรมาส 3', plan: planQ1 + planQ2 + planQ3, actual: actualQ1 + actualQ2 + actualQ3, showActual: currentQuarter >= 3, actualColor: colors[2], pct: pctQ3 },
+                    { name: 'ไตรมาส 4', plan: planQ1 + planQ2 + planQ3 + planQ4, actual: actualQ1 + actualQ2 + actualQ3 + actualQ4, showActual: currentQuarter >= 4, actualColor: colors[3], pct: pctQ4 }
                 ];
                 
                 // วาด Legend
@@ -302,8 +317,11 @@
                     const actualHeight = q.showActual ? (q.actual / maxVal) * 100 : 0;
                     
                     const actualBarHtml = q.showActual ? `
-                        <div class="flex flex-col items-center justify-end h-full w-full">
-                            <span class="text-xs sm:text-sm font-bold text-orange-900 mb-1 absolute bottom-full pb-1 opacity-0 transition-opacity duration-700 delay-300" style="bottom: ${actualHeight}%">${formatNum(q.actual)}</span>
+                        <div class="flex flex-col items-center justify-end h-full w-full relative">
+                            <div class="absolute flex flex-col items-center pb-1 opacity-0 transition-opacity duration-700 delay-300" style="bottom: ${actualHeight}%">
+                                <span class="${q.actualColor} text-white text-[10px] px-1.5 rounded font-bold shadow-sm mb-0.5">${q.pct}%</span>
+                                <span class="text-xs sm:text-sm font-bold text-orange-900">${formatNum(q.actual)}</span>
+                            </div>
                             <div class="w-6 sm:w-10 md:w-16 ${q.actualColor} rounded-t-md bar-chart-col shadow-sm" style="height: 0%" data-h="${actualHeight}"></div>
                         </div>
                     ` : `<div class="w-6 sm:w-10 md:w-16 bg-transparent"></div>`;
