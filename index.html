@@ -1,11 +1,143 @@
-<script>
-        // ใส่ลิงก์ CSV ของคุณตรงนี้
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - โครงการ Smart Farmer</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Sarabun', 'sans-serif'] },
+                    colors: {
+                        kaset: { 50: '#f2fbf5', 100: '#e1f6e8', 500: '#22c55e', 600: '#16a34a', 700: '#15803d', 900: '#14532d' },
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+
+    <style>
+        body { font-family: 'Sarabun', sans-serif; background-color: #fdfbf7; }
+        .conic-chart { transition: background 1s ease-in-out; }
+        .bar-chart-col { transition: height 0.7s cubic-bezier(0.4, 0, 0.2, 1); width: 100%; }
+        .bar-chart-col-text { transition: left 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+        @keyframes pulse-border {
+            0% { box-shadow: 0 0 0 0 rgba(234, 179, 8, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(234, 179, 8, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(234, 179, 8, 0); }
+        }
+        .status-highlight { animation: pulse-border 2s infinite; }
+    </style>
+</head>
+<body class="p-4 sm:p-6 lg:p-8 text-slate-800">
+    
+    <div class="max-w-7xl mx-auto">
+        <header class="mb-8 border-b-4 border-kaset-600 pb-4">
+            <p class="text-lg md:text-xl font-semibold text-slate-500 mb-1">Dashboard รายงานความก้าวหน้า</p>
+            <h1 id="project-name" class="text-xl md:text-2xl font-bold text-black leading-relaxed">กำลังโหลดข้อมูล...</h1>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div class="bg-indigo-50 rounded-2xl shadow-sm border border-indigo-100 p-6 flex items-center justify-between border-l-4 border-l-indigo-500">
+                <div>
+                    <p class="text-sm font-medium text-indigo-800/70 mb-1">เป้าหมายโครงการ (เฉพาะ KPI)</p>
+                    <h2 class="text-4xl font-bold text-indigo-950" id="kpi-target">-</h2>
+                </div>
+                <div class="bg-indigo-100 p-4 rounded-full">
+                    <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                </div>
+            </div>
+            <div class="bg-emerald-50 rounded-2xl shadow-sm border border-emerald-100 p-6 flex items-center justify-between border-l-4 border-l-emerald-500">
+                <div>
+                    <p class="text-sm font-medium text-emerald-800/70 mb-1">ผลการดำเนินงานสะสม (เฉพาะ KPI)</p>
+                    <h2 class="text-4xl font-bold text-emerald-950" id="kpi-actual">-</h2>
+                </div>
+                <div class="bg-emerald-100 p-4 rounded-full">
+                    <svg class="w-8 h-8 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path></svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <div class="bg-purple-100 rounded-2xl shadow-md border border-purple-200 p-6 lg:col-span-1 flex flex-col justify-between">
+                <h3 class="text-lg font-bold mb-4 flex items-center text-purple-900">
+                    <svg class="w-5 h-5 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path></svg>
+                    ภาพรวมโครงการ (จาก KPI)
+                </h3>
+                <div class="flex-grow flex items-center justify-center my-6">
+                    <div id="pie-chart" class="conic-chart w-56 h-56 rounded-full relative flex items-center justify-center shadow-inner" style="background: conic-gradient(#e2e8f0 0% 100%);">
+                        <div class="w-40 h-40 bg-white rounded-full flex flex-col items-center justify-center z-10 shadow-sm border-4 border-purple-100">
+                            <span class="text-4xl font-extrabold text-purple-950" id="pie-percent">0%</span>
+                            <span class="text-sm text-purple-600 font-medium">ร้อยละผลงาน</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-4 flex flex-col items-center text-center">
+                    <p class="text-sm text-purple-700/80 mb-2 font-medium">สถานะโครงการล่าสุด</p>
+                    <div id="project-status" class="inline-flex items-center justify-center px-6 py-3 rounded-xl text-xl font-bold border-2 shadow-sm w-full sm:w-auto bg-white">
+                        กำลังโหลด...
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-orange-100 rounded-2xl shadow-md border border-orange-200 p-6 lg:col-span-2 flex flex-col">
+                <h3 class="text-lg font-bold mb-4 flex items-center text-orange-950">
+                    <svg class="w-5 h-5 mr-2 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                    ผลการดำเนินงานรายไตรมาส (จากกิจกรรม KPI)
+                </h3>
+                <div class="flex-grow pt-10 relative h-72">
+                    <div class="flex justify-center space-x-6 mb-6 text-sm font-medium text-orange-900">
+                        <div class="flex items-center"><div class="w-4 h-4 bg-orange-200 mr-2 rounded-sm border border-orange-300"></div> แผนสะสม</div>
+                        <div class="flex items-center"><div class="w-4 h-4 bg-[#0ea5e9] mr-2 rounded-sm"></div> ผล Q1</div>
+                        <div class="flex items-center"><div class="w-4 h-4 bg-[#16a34a] mr-2 rounded-sm"></div> ผล Q2</div>
+                    </div>
+                    <div class="absolute inset-0 top-16 bottom-8 border-b-2 border-orange-300 flex items-end justify-around px-2 sm:px-4" id="bar-chart-container">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-cyan-50 rounded-2xl shadow-sm border border-cyan-100 overflow-hidden mb-12">
+            <div class="p-6 border-b border-cyan-200 bg-cyan-100/30">
+                <h3 class="text-lg font-bold flex items-center text-cyan-950">
+                    <svg class="w-5 h-5 mr-2 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                    ติดตามสถานะรายกิจกรรม
+                </h3>
+            </div>
+            <div class="overflow-x-auto bg-white/50">
+                <table class="w-full text-sm text-left">
+                    <thead class="text-xs text-cyan-800 bg-cyan-100/60 border-b-2 border-cyan-200">
+                        <tr>
+                            <th class="px-6 py-4 font-bold w-1/3">กิจกรรม</th>
+                            <th class="px-4 py-4 font-bold text-center w-20">หน่วยนับ</th>
+                            <th class="px-4 py-4 font-bold text-right w-24">เป้าหมาย</th>
+                            <th class="px-4 py-4 font-bold text-right w-24">ผลงานสะสม</th>
+                            <th class="px-6 py-4 font-bold">ความก้าวหน้า (เปรียบเทียบแผนสะสม)</th>
+                            <th class="px-6 py-4 font-bold text-center w-36">สถานะ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 📌 1. ใส่ลิงก์ CSV
         const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR0SZMY4dcJHbXAFHOXFJmmFyewUDjWy2yFVKCkJqoG4Iz-kTa84-LpxORbOTJoDGWOkz2nPa1usyJ1/pub?gid=1908480955&single=true&output=csv"; 
 
-        // 📌 กำหนดไตรมาสปัจจุบันที่นี่ (เปลี่ยนเป็น 1, 2, 3 หรือ 4 ตามช่วงเวลาจริง)
+        // 📌 2. กำหนดไตรมาสปัจจุบัน (เปลี่ยนเป็น 1, 2, 3 หรือ 4 ตามช่วงเวลาจริง)
         const currentQuarter = 2;
 
-        // ฟังก์ชันอ่าน CSV
+        // ฟังก์ชันอ่าน CSV อย่างปลอดภัย
         function fetchCSVData(url) {
             return new Promise((resolve, reject) => {
                 Papa.parse(url, {
@@ -25,46 +157,42 @@
             if (status.includes("เป็นไปตามแผน")) return "bg-green-100 text-green-800 border-green-300";
             if (status.includes("ล่าช้า")) return "bg-yellow-100 text-yellow-800 border-yellow-300 status-highlight";
             if (status.includes("เสี่ยง")) return "bg-red-100 text-red-800 border-red-300";
-            if (status.includes("❌ ยังไม่ดำเนินการ")) return "bg-red-600 text-white border-red-800 shadow-md animate-pulse ring-2 ring-red-300 font-bold";
+            if (status.includes("ยังไม่ดำเนินการ") || status.includes("ไม่มี")) return "bg-red-600 text-white border-red-800 shadow-md animate-pulse ring-2 ring-red-300 font-bold";
             return "bg-slate-100 text-slate-600 border-slate-300";
         };
 
-        const issuesData = {
-            projectOverview: "สืบเนื่องจากผลการดำเนินงานรวมของกิจกรรม KPI อยู่ในเกณฑ์ล่าช้า/เสี่ยง จึงต้องเร่งรัดการจัดกิจกรรมในพื้นที่",
-            activityIssues: [
-                { id: 1, text: "เกษตรกรกลุ่มเป้าหมายบางส่วนติดภารกิจ ทำให้การเข้าร่วมการอบรมไม่ครบตามจำนวนในบางรุ่น" },
-                { id: 4, text: "การประสานงานรวบรวมกลุ่มเป้าหมายในบางจังหวัดมีความล่าช้า" },
-                { id: 7, text: "อยู่ระหว่างการปรับปรุงหลักสูตรให้ครอบคลุมเทคโนโลยีการเกษตรสมัยใหม่" }
-            ]
+        // ฟังก์ชันดึงตัวเลขจากคอลัมน์ ป้องกันปัญหาเว้นวรรคผิด
+        const getSafeNum = (row, keyStr) => {
+            let val = row[keyStr] || row[keyStr + " "] || "0";
+            return parseFloat(String(val).replace(/,/g, '')) || 0;
         };
 
         document.addEventListener('DOMContentLoaded', async () => {
             try {
-                // 1. ดึงข้อมูลจาก Sheets
+                // โหลดข้อมูล
                 const rawData = await fetchCSVData(CSV_URL);
                 
-                // 2. จัดรูปแบบข้อมูลรายกิจกรรม
+                // จัดเตรียม Array ของกิจกรรม
                 const activities = rawData.map((row, index) => {
-                    const getCol = (key) => row[key] || row[key + " "] || "0";
                     return {
                         id: index + 1,
                         name: row["โครงการ/กิจกรรม"] || "-",
                         unit: row["หน่วยนับ"] || "-",
-                        target: parseFloat(getCol("เป้าหมาย").replace(/,/g, '')),
-                        actual: parseFloat(getCol("ผลการดำเนินงานสะสม").replace(/,/g, '')),
-                        planQ1: parseFloat(getCol("แผนไตรมาส 1").replace(/,/g, '')),
-                        actualQ1: parseFloat(getCol("ผลไตรมาส 1").replace(/,/g, '')),
-                        planQ2: parseFloat(getCol("แผนไตรมาส 2").replace(/,/g, '')),
-                        actualQ2: parseFloat(getCol("ผลไตรมาส 2").replace(/,/g, '')),
-                        planQ3: parseFloat(getCol("แผนไตรมาส 3").replace(/,/g, '')),
-                        planQ4: parseFloat(getCol("แผนไตรมาส 4").replace(/,/g, '')),
+                        target: getSafeNum(row, "เป้าหมาย"),
+                        actual: getSafeNum(row, "ผลการดำเนินงานสะสม"),
+                        planQ1: getSafeNum(row, "แผนไตรมาส 1"),
+                        actualQ1: getSafeNum(row, "ผลไตรมาส 1"),
+                        planQ2: getSafeNum(row, "แผนไตรมาส 2"),
+                        actualQ2: getSafeNum(row, "ผลไตรมาส 2"),
+                        planQ3: getSafeNum(row, "แผนไตรมาส 3"),
+                        planQ4: getSafeNum(row, "แผนไตรมาส 4"),
                         status: row["สถานะไตรมาส 2"] || row["สถานะไตรมาส 1"] || "❌ ยังไม่ดำเนินการ"
                     };
                 }).filter(act => act.name !== "-" && !act.name.includes("โครงการพัฒนาทักษะ"));
 
-                // ---------------------------------------------------------
-                // 3. คำนวณภาพรวมโครงการจาก "กิจกรรมที่เป็น KPI เท่านั้น"
-                // ---------------------------------------------------------
+                // ==========================================
+                // คำนวณภาพรวมจาก "กิจกรรม KPI" เท่านั้น
+                // ==========================================
                 const kpiActivities = activities.filter(act => act.name.includes("(KPI)"));
 
                 const totalTarget = kpiActivities.reduce((sum, act) => sum + act.target, 0);
@@ -78,8 +206,8 @@
                 const planQ3 = kpiActivities.reduce((sum, act) => sum + act.planQ3, 0);
                 const planQ4 = kpiActivities.reduce((sum, act) => sum + act.planQ4, 0);
 
-                // 3.2 คำนวณสถานะโครงการล่าสุดตามเงื่อนไขเปอร์เซ็นต์
-                let projectStatus = "❌ ยังไม่ดำเนินการ";
+                // เช็กสถานะตามเงื่อนไข (100=ตามแผน, 50-99=ล่าช้า, 0.01-49=เสี่ยง, 0=เช็กไตรมาส)
+                let projectStatus = "";
                 const p = parseFloat(percentCum);
 
                 if (p >= 100) {
@@ -88,68 +216,41 @@
                     projectStatus = "🟡 ล่าช้า";
                 } else if (p >= 0.01 && p <= 49.99) {
                     projectStatus = "🔴 เสี่ยง";
-                } else if (p === 0) {
-                    // หาว่ามีแผนในไตรมาสปัจจุบันหรือที่ผ่านมาแล้วหรือยัง
-                    let planUpToCurrent = 0;
-                    if (currentQuarter >= 1) planUpToCurrent += planQ1;
-                    if (currentQuarter >= 2) planUpToCurrent += planQ2;
-                    if (currentQuarter >= 3) planUpToCurrent += planQ3;
-                    if (currentQuarter >= 4) planUpToCurrent += planQ4;
-
-                    if (planUpToCurrent > 0) {
-                        projectStatus = "❌ ยังไม่ดำเนินการ";
-                    } else {
-                        // เช็กว่ามีแผนในอนาคตหรือไม่
-                        if (currentQuarter === 1 && (planQ2 > 0 || planQ3 > 0 || planQ4 > 0)) projectStatus = "⚪ มีแผนอยู่ใน Q2/Q3/Q4";
-                        else if (currentQuarter === 2 && (planQ3 > 0 || planQ4 > 0)) projectStatus = "⚪ มีแผนอยู่ใน Q3/Q4";
-                        else if (currentQuarter === 3 && planQ4 > 0) projectStatus = "⚪ มีแผนอยู่ใน Q4";
-                    }
+                } else {
+                    if (currentQuarter === 1) projectStatus = "⚪ มีแผนอยู่ใน Q2/Q3/Q4";
+                    else if (currentQuarter === 2) projectStatus = "⚪ มีแผนอยู่ใน Q3/Q4";
+                    else if (currentQuarter === 3) projectStatus = "⚪ มีแผนอยู่ใน Q4";
+                    else projectStatus = "❌ ยังไม่ดำเนินการ";
                 }
 
-                const projectData = {
-                    name: "โครงการพัฒนาทักษะและแนวคิดผู้ประกอบการธุรกิจเกษตร (เกษตรกรปราดเปรื่อง (Smart Farmer))",
-                    target: totalTarget, 
-                    actualCum: totalActual, 
-                    percentCum: percentCum, 
-                    statusQ2: projectStatus,
-                    planQ1: planQ1,
-                    actualQ1: actualQ1,
-                    planQ2: planQ2,
-                    actualQ2: actualQ2,
-                    planQ3: planQ3,
-                    planQ4: planQ4
-                };
-
-                // ---------------------------------------------------------
-                // 4. แสดงผลข้อมูลลงใน HTML
-                // ---------------------------------------------------------
-                document.getElementById('project-name').textContent = projectData.name;
+                // นำไปแสดงผล
+                document.getElementById('project-name').textContent = "โครงการพัฒนาทักษะและแนวคิดผู้ประกอบการธุรกิจเกษตร (Smart Farmer)";
+                document.getElementById('kpi-target').innerHTML = `${formatNum(totalTarget)} <span class="text-xl font-medium text-indigo-700/70">ราย</span>`;
+                document.getElementById('kpi-actual').innerHTML = `${formatNum(totalActual)} <span class="text-xl font-medium text-emerald-700/70">ราย</span>`;
                 
-                document.getElementById('kpi-target').innerHTML = `${formatNum(projectData.target)} <span class="text-xl font-medium text-indigo-700/70">ราย</span>`;
-                document.getElementById('kpi-actual').innerHTML = `${formatNum(projectData.actualCum)} <span class="text-xl font-medium text-emerald-700/70">ราย</span>`;
-                
+                // กราฟวงกลม
                 const pieChart = document.getElementById('pie-chart');
-                const piePercent = document.getElementById('pie-percent');
-                piePercent.textContent = projectData.percentCum + '%';
+                document.getElementById('pie-percent').textContent = percentCum + '%';
                 
                 let pieColor = "#16a34a"; 
-                if (projectData.statusQ2.includes("ล่าช้า")) pieColor = "#eab308"; 
-                if (projectData.statusQ2.includes("เสี่ยง")) pieColor = "#ef4444"; 
+                if (projectStatus.includes("ล่าช้า")) pieColor = "#eab308"; 
+                if (projectStatus.includes("เสี่ยง")) pieColor = "#ef4444"; 
+                if (p === 0) pieColor = "#cbd5e1";
 
                 setTimeout(() => {
-                    pieChart.style.background = `conic-gradient(${pieColor} 0% ${projectData.percentCum}%, #f1f5f9 ${projectData.percentCum}% 100%)`;
+                    pieChart.style.background = `conic-gradient(${pieColor} 0% ${percentCum}%, #f1f5f9 ${percentCum}% 100%)`;
                 }, 100);
 
                 const statusEl = document.getElementById('project-status');
-                statusEl.textContent = projectData.statusQ2;
-                statusEl.className = `inline-flex items-center justify-center px-8 py-4 rounded-2xl text-2xl font-bold border-2 shadow-sm w-full sm:w-auto bg-white ${getStatusStyles(projectData.statusQ2)}`;
+                statusEl.textContent = projectStatus;
+                statusEl.className = `inline-flex items-center justify-center px-8 py-4 rounded-2xl text-2xl font-bold border-2 shadow-sm w-full sm:w-auto bg-white ${getStatusStyles(projectStatus)}`;
 
-                // กราฟแท่งรายไตรมาส (คำนวณจาก KPI เท่านั้น)
+                // กราฟแท่งรายไตรมาส
                 const qData = [
-                    { name: 'ไตรมาส 1', plan: projectData.planQ1, actual: projectData.actualQ1, showActual: true, actualColor: 'bg-[#0ea5e9]' },
-                    { name: 'ไตรมาส 2', plan: projectData.planQ1 + projectData.planQ2, actual: projectData.actualQ1 + projectData.actualQ2, showActual: true, actualColor: 'bg-[#16a34a]' },
-                    { name: 'ไตรมาส 3', plan: projectData.planQ1 + projectData.planQ2 + projectData.planQ3, actual: 0, showActual: false, actualColor: '' },
-                    { name: 'ไตรมาส 4', plan: projectData.planQ1 + projectData.planQ2 + projectData.planQ3 + projectData.planQ4, actual: 0, showActual: false, actualColor: '' }
+                    { name: 'ไตรมาส 1', plan: planQ1, actual: actualQ1, showActual: true, actualColor: 'bg-[#0ea5e9]' },
+                    { name: 'ไตรมาส 2', plan: planQ1 + planQ2, actual: actualQ1 + actualQ2, showActual: true, actualColor: 'bg-[#16a34a]' },
+                    { name: 'ไตรมาส 3', plan: planQ1 + planQ2 + planQ3, actual: 0, showActual: false, actualColor: '' },
+                    { name: 'ไตรมาส 4', plan: planQ1 + planQ2 + planQ3 + planQ4, actual: 0, showActual: false, actualColor: '' }
                 ];
                 
                 const maxVal = Math.max(...qData.map(d => d.plan)) * 1.25 || 1; 
@@ -161,7 +262,7 @@
                     const actualHeight = q.showActual ? (q.actual / maxVal) * 100 : 0;
                     
                     const actualBarHtml = q.showActual ? `
-                        <div class="flex flex-col items-center justify-end h-full">
+                        <div class="flex flex-col items-center justify-end h-full w-full">
                             <span class="text-xs sm:text-sm font-bold text-orange-900 mb-1 absolute bottom-full pb-1 opacity-0 transition-opacity duration-700 delay-300" style="bottom: ${actualHeight}%">${formatNum(q.actual)}</span>
                             <div class="w-6 sm:w-10 md:w-16 ${q.actualColor} rounded-t-md bar-chart-col shadow-sm" style="height: 0%" data-h="${actualHeight}"></div>
                         </div>
@@ -170,7 +271,7 @@
                     barContainer.innerHTML += `
                         <div class="flex flex-col items-center w-1/4 h-full justify-end">
                             <div class="flex items-end space-x-1 sm:space-x-2 h-full w-full justify-center relative pb-0">
-                                <div class="flex flex-col items-center justify-end h-full">
+                                <div class="flex flex-col items-center justify-end h-full w-full">
                                     <span class="text-xs sm:text-sm font-bold text-orange-600 mb-1 absolute bottom-full pb-1 opacity-0 transition-opacity duration-700 delay-300" style="bottom: ${planHeight}%">${formatNum(q.plan)}</span>
                                     <div class="w-6 sm:w-10 md:w-16 bg-orange-200 border border-orange-300 rounded-t-md bar-chart-col" style="height: 0%" data-h="${planHeight}"></div>
                                 </div>
@@ -188,45 +289,7 @@
                     document.querySelectorAll('.opacity-0').forEach(text => { text.classList.remove('opacity-0'); });
                 }, 100);
 
-                // สรุปการ์ดนับจำนวนกิจกรรมทั้งหมด (อิงตามสถานะของแต่ละกิจกรรม ไม่ได้กรองแค่ KPI)
-                const summary = {
-                    total: activities.length,
-                    onTrack: activities.filter(a => a.status.includes("เป็นไปตามแผน")).length,
-                    delayed: activities.filter(a => a.status.includes("ล่าช้า")).length,
-                    atRisk: activities.filter(a => a.status.includes("เสี่ยง")).length,
-                    notStartedSevere: activities.filter(a => a.status.includes("❌ ยังไม่ดำเนินการ")).length,
-                    notStarted: activities.filter(a => a.status.includes("มีแผนอยู่ใน")).length,
-                };
-
-                document.getElementById('summary-cards').innerHTML = `
-                    <div class="col-span-2 md:col-span-1 bg-white rounded-xl p-4 text-center border-2 border-slate-200 shadow-sm">
-                        <p class="text-sm font-bold text-slate-500 mb-1">กิจกรรมทั้งหมด</p>
-                        <p class="text-4xl font-extrabold text-slate-800">${summary.total}</p>
-                    </div>
-                    <div class="bg-white rounded-xl p-4 border-2 border-green-200 text-center shadow-sm">
-                        <p class="text-sm font-bold text-green-700 mb-1">เป็นไปตามแผน</p>
-                        <p class="text-4xl font-extrabold text-green-700">${summary.onTrack}</p>
-                    </div>
-                    <div class="bg-white rounded-xl p-4 border-2 border-yellow-300 text-center shadow-sm">
-                        <p class="text-sm font-bold text-yellow-600 mb-1">ล่าช้า</p>
-                        <p class="text-4xl font-extrabold text-yellow-600">${summary.delayed}</p>
-                    </div>
-                    <div class="bg-white rounded-xl p-4 border-2 border-red-200 text-center shadow-sm">
-                        <p class="text-sm font-bold text-red-600 mb-1">เสี่ยง</p>
-                        <p class="text-4xl font-extrabold text-red-600">${summary.atRisk}</p>
-                    </div>
-                    <div class="bg-white rounded-xl p-4 border-2 border-red-400 text-center shadow-sm relative overflow-hidden">
-                        <div class="absolute inset-0 bg-red-50 opacity-50 animate-pulse"></div>
-                        <p class="text-sm font-bold text-red-700 mb-1 relative z-10">ยังไม่ดำเนินการ</p>
-                        <p class="text-4xl font-extrabold text-red-700 relative z-10">${summary.notStartedSevere}</p>
-                    </div>
-                    <div class="col-span-2 md:col-span-1 bg-white rounded-xl p-4 text-center border-2 border-slate-200 border-dashed shadow-sm">
-                        <p class="text-sm font-bold text-slate-400 mb-1">มีแผนในไตรมาสถัดไป</p>
-                        <p class="text-4xl font-extrabold text-slate-400">${summary.notStarted}</p>
-                    </div>
-                `;
-
-                // ตารางติดตามสถานะรายกิจกรรม
+                // ตารางกิจกรรม (แสดงทั้งหมด)
                 const tbody = document.getElementById('table-body');
                 tbody.innerHTML = '';
                 activities.forEach(act => {
@@ -240,7 +303,7 @@
                     if (act.status.includes("เป็นไปตามแผน")) barColor = "bg-[#16a34a]"; 
                     if (act.status.includes("ล่าช้า")) barColor = "bg-yellow-400"; 
                     if (act.status.includes("เสี่ยง")) barColor = "bg-red-500"; 
-                    if (act.status.includes("❌ ยังไม่ดำเนินการ")) barColor = "bg-red-600"; 
+                    if (act.status.includes("ยังไม่ดำเนินการ") || act.status.includes("ไม่มี")) barColor = "bg-red-600"; 
 
                     let markersHtml = '';
                     if(q1Pos > 0) markersHtml += `<div class="absolute top-[16px] z-10 flex flex-col items-center -translate-x-1/2" style="left: ${q1Pos}%"><div class="h-3 w-px bg-cyan-600/50"></div><span class="text-[10px] font-bold text-cyan-800 mt-0.5 bg-white px-1 border border-cyan-200 rounded">Q1</span></div>`;
@@ -272,7 +335,7 @@
                             <td class="px-4 py-4 text-right font-bold text-blue-700">${formatNum(act.actual)}</td>
                             <td class="px-6 py-4">${progressHtml}</td>
                             <td class="px-6 py-4 text-center">
-                                <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold border whitespace-nowrap shadow-sm ${getStatusStyles(act.status)}">${act.status}</span>
+                                <span class="inline-flex items-center px-3 py-1.5 rounded-full text-[11px] font-bold border whitespace-nowrap shadow-sm ${getStatusStyles(act.status)}">${act.status}</span>
                             </td>
                         </tr>
                     `;
@@ -287,52 +350,12 @@
                     });
                 }, 100);
 
-                // ปัญหาและอุปสรรค
-                let issuesHtml = '';
-                if (projectData.statusQ2.includes("ล่าช้า") || projectData.statusQ2.includes("เสี่ยง")) {
-                    issuesHtml += `
-                        <div class="bg-white border-l-4 border-red-500 p-5 rounded-r-xl shadow-sm">
-                            <h4 class="font-bold text-red-800 mb-2 flex items-center">ภาพรวมโครงการ (สถานะ ${projectData.statusQ2})</h4>
-                            <p class="text-sm text-red-700 leading-relaxed">${issuesData.projectOverview}</p>
-                        </div>
-                    `;
-                }
-
-                const problematicActivities = activities.filter(a => a.status.includes("ล่าช้า") || a.status.includes("เสี่ยง") || a.status.includes("❌ ยังไม่ดำเนินการ"));
-                if (problematicActivities.length > 0) {
-                    issuesHtml += `<h4 class="font-bold text-rose-950 mt-6 mb-3 text-base">รายกิจกรรม</h4><div class="grid grid-cols-1 md:grid-cols-2 gap-4">`;
-                    problematicActivities.forEach(act => {
-                        const issueMatch = issuesData.activityIssues.find(i => i.id === act.id);
-                        const issueText = issueMatch ? issueMatch.text : "อยู่ระหว่างตรวจสอบและรวบรวมสาเหตุการดำเนินงาน";
-                        
-                        let statusColor = "text-slate-600 bg-slate-50 border-slate-200";
-                        if (act.status.includes("เสี่ยง")) statusColor = "text-red-700 bg-red-50 border-red-200";
-                        else if (act.status.includes("ล่าช้า")) statusColor = "text-yellow-700 bg-yellow-50 border-yellow-200";
-                        else if (act.status.includes("❌ ยังไม่ดำเนินการ")) statusColor = "text-white bg-red-600 border-red-800 shadow-sm animate-pulse";
-                        
-                        const displayName = act.name.replace("(KPI)", '<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-800 mr-1">(KPI)</span>');
-
-                        issuesHtml += `
-                            <div class="border border-rose-200 rounded-xl p-4 bg-white flex flex-col hover:shadow-md transition-shadow">
-                                <div class="mb-3"><span class="text-xs font-bold px-2.5 py-1 rounded-full border ${statusColor}">${act.status}</span></div>
-                                <h5 class="text-sm font-bold text-rose-950 mb-3 leading-relaxed">${displayName}</h5>
-                                <div class="bg-rose-50/50 p-3 rounded-lg border border-rose-100 flex-grow">
-                                    <p class="text-sm text-rose-900 leading-relaxed"><span class="font-semibold text-rose-950">สาเหตุ:</span> ${issueText}</p>
-                                </div>
-                            </div>
-                        `;
-                    });
-                    issuesHtml += `</div>`;
-                } else {
-                    issuesHtml = `<div class="bg-white p-6 rounded-xl border border-rose-100 text-center text-rose-500 font-medium shadow-sm">ไม่พบปัญหาหรือความเสี่ยงในการดำเนินงาน ณ ปัจจุบัน ทุกกิจกรรมดำเนินการได้ตามแผน</div>`;
-                }
-
-                document.getElementById('issues-container').innerHTML = issuesHtml;
-
             } catch (error) {
-                console.error("Error loading CSV:", error);
-                document.getElementById('project-name').textContent = "เกิดข้อผิดพลาดในการโหลดข้อมูล";
-                alert("ไม่สามารถดึงข้อมูลจาก Google Sheets ได้ กรุณาตรวจสอบลิงก์ หรือสถานะการเผยแพร่ไฟล์อีกครั้ง");
+                console.error("Error Detail:", error);
+                document.getElementById('project-name').textContent = "เกิดข้อผิดพลาด กรุณาตรวจสอบลิงก์ CSV หรือการเชื่อมต่อเน็ตเวิร์ก";
+                document.getElementById('project-name').className = "text-xl md:text-2xl font-bold text-red-600";
             }
         });
     </script>
+</body>
+</html>
