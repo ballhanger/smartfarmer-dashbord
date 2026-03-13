@@ -35,11 +35,11 @@
         }
         .status-highlight { animation: pulse-border 2s infinite; }
         
-        /* ตกแต่ง Scrollbar สำหรับพื้นที่กราฟให้เลื่อนง่ายและสวยงาม */
+        /* ตกแต่ง Scrollbar ให้ดูเรียบหรู เลื่อนง่าย */
         .hide-scroll::-webkit-scrollbar { height: 10px; }
-        .hide-scroll::-webkit-scrollbar-track { background: rgba(255,255,255,0.6); border-radius: 10px; margin: 0 20px; }
-        .hide-scroll::-webkit-scrollbar-thumb { background: rgba(165,180,252,0.8); border-radius: 10px; border: 2px solid white; }
-        .hide-scroll::-webkit-scrollbar-thumb:hover { background: rgba(129,140,248,1); }
+        .hide-scroll::-webkit-scrollbar-track { background: rgba(226, 232, 240, 0.6); border-radius: 10px; margin: 0 10px; }
+        .hide-scroll::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.8); border-radius: 10px; border: 2px solid transparent; background-clip: content-box; }
+        .hide-scroll::-webkit-scrollbar-thumb:hover { background-color: rgba(100, 116, 139, 1); }
     </style>
 </head>
 <body class="p-4 sm:p-6 lg:p-8 text-slate-800">
@@ -133,21 +133,21 @@
             </div>
         </div>
 
-        <div class="bg-gradient-to-br from-slate-100 via-indigo-50 to-blue-100 rounded-3xl shadow-lg border border-indigo-200 p-6 md:p-8 mb-10 flex flex-col w-full relative overflow-hidden">
-            <h3 class="text-xl md:text-2xl font-extrabold mb-2 flex items-center text-indigo-950 border-b border-indigo-200/70 pb-4">
+        <div class="bg-gradient-to-br from-slate-50 via-indigo-50 to-slate-100 rounded-[2rem] shadow-lg border border-slate-200 p-4 sm:p-6 md:p-8 mb-10 flex flex-col w-full">
+            <h3 class="text-xl md:text-2xl font-extrabold mb-2 flex items-center text-indigo-950 border-b border-indigo-200/80 pb-4">
                 <svg class="w-7 h-7 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
                 ผลการดำเนินงาน (กิจกรรม KPI) และการใช้จ่ายงบประมาณ สะสมรายไตรมาส
             </h3>
             
-            <div class="flex flex-wrap justify-center gap-x-6 gap-y-3 mt-4 mb-2 text-sm font-bold text-slate-700 relative z-20">
+            <div class="flex flex-wrap justify-center gap-x-4 sm:gap-x-6 gap-y-2 mt-4 mb-2 text-xs sm:text-sm font-bold text-slate-700 z-20">
                 <div class="flex items-center"><div class="w-4 h-4 bg-green-200 border border-green-400 mr-2 rounded-sm"></div> แผนการดำเนินงาน</div>
                 <div class="flex items-center"><div class="w-4 h-4 bg-green-500 mr-2 rounded-sm shadow-sm border border-green-600"></div> ผลการดำเนินงาน</div>
                 <div class="flex items-center"><div class="w-4 h-4 bg-amber-200 border border-amber-400 mr-2 rounded-sm"></div> แผนการใช้จ่ายงบประมาณ</div>
                 <div class="flex items-center"><div class="w-4 h-4 bg-amber-500 mr-2 rounded-sm shadow-sm border border-amber-600"></div> ผลการใช้จ่ายงบประมาณ</div>
             </div>
 
-            <div class="flex-grow pt-8 relative h-[500px] w-full overflow-x-auto hide-scroll pb-2">
-                <div class="absolute inset-0 top-8 bottom-6 flex justify-between px-2 min-w-[1200px]" id="combined-bar-chart-container">
+            <div class="w-full overflow-x-auto hide-scroll pb-6 pt-4">
+                <div class="relative h-[400px] sm:h-[450px] min-w-[900px] lg:min-w-[1100px] flex justify-between items-end px-2 sm:px-4 pb-2" id="combined-bar-chart-container">
                     </div>
             </div>
         </div>
@@ -217,19 +217,31 @@
             currentQuarter = 4; isLastMonthOfQuarter = (currentMonth === 9); 
         }
 
+        // ฟังก์ชันอ่าน CSV
+        function fetchCSVData(url) {
+            return new Promise((resolve, reject) => {
+                Papa.parse(url, {
+                    download: true, header: true, skipEmptyLines: true,
+                    complete: function(results) { resolve(results.data); },
+                    error: function(error) { reject(error); }
+                });
+            });
+        }
+
         document.addEventListener('DOMContentLoaded', async () => {
             try {
+                // อัปเดตชื่อโครงการและเลขไตรมาส
                 document.getElementById('project-name').textContent = "โครงการพัฒนาทักษะและแนวคิดผู้ประกอบการธุรกิจเกษตร (เกษตรกรปราดเปรื่อง (Smart Farmer)) ปีงบประมาณ 2569";
                 document.querySelectorAll('.display-quarter').forEach(el => el.textContent = currentQuarter);
 
                 // ฟอร์แมตตัวเลขงบประมาณ (บังคับ 2 ตำแหน่งเสมอ)
                 const formatMoney = (num) => new Intl.NumberFormat('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(num);
-                // ฟอร์แมตตัวเลข KPI (มีเศษโชว์ 2 ตำแหน่ง ไม่มีเศษโชว์จำนวนเต็ม)
+                
+                // ฟอร์แมตตัวเลขผลงาน (ถ้ามีเศษโชว์ 2 ตำแหน่ง, ถ้าไม่มีเศษโชว์จำนวนเต็ม)
                 const formatAutoDecimal = (num) => {
                     if (num % 1 !== 0) return new Intl.NumberFormat('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(num);
                     return new Intl.NumberFormat('th-TH').format(num); 
                 };
-                const formatNum = formatAutoDecimal; 
 
                 const getStatusStyles = (status) => {
                     if (!status) return "bg-slate-100 text-slate-600 border-slate-300";
@@ -240,12 +252,13 @@
                     return "bg-slate-100 text-slate-600 border-slate-300";
                 };
 
+                // ฟังก์ชันเลือกสีป้ายเปอร์เซ็นต์ให้ตรงกับสถานะ
                 const getBadgeColor = (actual, plan) => {
-                    if (plan === 0 && actual === 0) return 'bg-slate-400 text-white'; 
+                    if (plan === 0 && actual === 0) return 'bg-slate-500 text-white border-slate-600'; 
                     const pct = plan > 0 ? (actual / plan) * 100 : (actual > 0 ? 100 : 0);
-                    if (pct >= 100) return 'bg-green-600 text-white';
-                    if (pct >= 50) return 'bg-yellow-500 text-white';
-                    return 'bg-red-500 text-white';
+                    if (pct >= 100) return 'bg-green-600 text-white border-green-700';
+                    if (pct >= 50) return 'bg-yellow-500 text-yellow-950 border-yellow-600'; 
+                    return 'bg-red-500 text-white border-red-600';
                 };
 
                 const getSafeNum = (row, keyStr) => {
@@ -263,18 +276,8 @@
 
                 const calcSafePct = (actual, plan) => {
                     if (plan > 0) return ((actual / plan) * 100).toFixed(2);
-                    if (actual > 0) return 100.00;
-                    return 0;
-                };
-
-                const fetchCSVData = (url) => {
-                    return new Promise((resolve, reject) => {
-                        Papa.parse(url, {
-                            download: true, header: true, skipEmptyLines: true,
-                            complete: function(results) { resolve(results.data); },
-                            error: function(error) { reject(error); }
-                        });
-                    });
+                    if (actual > 0) return "100.00";
+                    return "0.00";
                 };
 
                 const rawData = await fetchCSVData(CSV_URL);
@@ -340,7 +343,7 @@
                     const bPieChart = document.getElementById('pie-chart-budget');
                     document.getElementById('pie-percent-budget').textContent = bPercentCum + '%';
                     let bPieColor = "#10b981"; 
-                    if (bStatus.includes("ล่าช้า")) bPieColor = "#f59e0b"; 
+                    if (bStatus.includes("ล่าช้า")) bPieColor = "#eab308"; 
                     if (bStatus.includes("เสี่ยง")) bPieColor = "#ef4444"; 
                     if (bCurrentPlanCum === 0) bPieColor = "#cbd5e1";
                     setTimeout(() => { bPieChart.style.background = `conic-gradient(${bPieColor} 0% ${bPercentCum}%, #ecfdf5 ${bPercentCum}% 100%)`; }, 100);
@@ -418,7 +421,7 @@
                 statusEl.className = `inline-flex items-center justify-center px-4 py-3 rounded-xl text-lg sm:text-[19px] font-bold border-2 shadow-sm w-full bg-white leading-tight ${getStatusStyles(projectStatus)}`;
 
                 // ==========================================
-                // 3. กราฟแท่งรวม (ผลงาน + งบประมาณ แก้ไขการ์ดไตรมาส)
+                // 3. กราฟแท่งรวม (จัดสเกลใหม่ แก้ทับซ้อน สลับสีการ์ดไตรมาส)
                 // ==========================================
                 const actualQ1 = kpiActivities.reduce((sum, act) => sum + act.actualQ1, 0);
                 const actualQ2 = kpiActivities.reduce((sum, act) => sum + act.actualQ2, 0);
@@ -448,9 +451,9 @@
                     }
                 ];
 
-                // หาระยะสูงสุดแยกแกนอิสระ เผื่อที่ด้านบน 25% ให้ตัวเลขไม่ทะลุกรอบ
-                const maxP = Math.max(...qData.map(d => Math.max(d.pPlan, d.pAct))) * 1.25 || 1; 
-                const maxB = Math.max(...qData.map(d => Math.max(d.bPlan, d.bAct))) * 1.25 || 1; 
+                // หาระยะสูงสุดแยกแกนอิสระ เผื่อที่ว่างด้านบน 20% เพื่อให้ตัวเลขลอยไม่ทะลุกรอบ
+                const maxP = Math.max(...qData.map(d => Math.max(d.pPlan, d.pAct))) * 1.20 || 1; 
+                const maxB = Math.max(...qData.map(d => Math.max(d.bPlan, d.bAct))) * 1.20 || 1; 
 
                 const barContainer = document.getElementById('combined-bar-chart-container');
                 barContainer.innerHTML = '';
@@ -461,23 +464,24 @@
                     const bpH = (q.bPlan / maxB) * 100;
                     const baH = q.showActual ? (q.bAct / maxB) * 100 : 0;
 
-                    // กำหนดสีป้ายเปอร์เซ็นต์ตามสถานะ
+                    // สีป้ายเปอร์เซ็นต์ตามเกณฑ์ความสำเร็จ
                     const pBadgeClass = getBadgeColor(q.pAct, q.pPlan);
                     const bBadgeClass = getBadgeColor(q.bAct, q.bPlan);
 
-                    // สลับสีพื้นหลังการ์ดย่อยรายไตรมาส (1,3 เข้ม / 2,4 อ่อน)
+                    // สลับสีพื้นหลังการ์ด (1, 3 สีฟ้าเข้ม / 2, 4 สีขาว)
                     const cardBgClass = index % 2 === 0 
-                        ? "bg-indigo-50 border border-indigo-200 shadow-md" 
+                        ? "bg-indigo-100/50 border border-indigo-200 shadow-sm" 
                         : "bg-white border border-slate-200 shadow-sm";
                     
-                    const labelBgClass = index % 2 === 0 ? "bg-indigo-700 text-white" : "bg-slate-700 text-white";
-                    
+                    const labelBgClass = index % 2 === 0 ? "bg-indigo-700 text-white" : "bg-slate-600 text-white";
+
+                    // โครงสร้างแท่งกราฟ
                     barContainer.innerHTML += `
-                        <div class="flex flex-col items-center w-1/4 h-full justify-end ${cardBgClass} rounded-2xl mx-2 sm:mx-3 relative pt-6 pb-4">
+                        <div class="flex flex-col items-center w-1/4 h-full justify-end ${cardBgClass} rounded-2xl mx-1.5 sm:mx-3 relative pt-4 pb-2 transition-all hover:-translate-y-1 hover:shadow-md">
                             
-                            <div class="flex items-end space-x-2 sm:space-x-3 h-full w-full justify-center relative pb-0 z-10 px-2">
+                            <div class="flex items-end space-x-1.5 sm:space-x-3 h-full w-full justify-center relative z-10 px-2 sm:px-4">
                                 
-                                <div class="flex flex-col items-center justify-end h-full relative w-6 sm:w-10 md:w-14">
+                                <div class="flex flex-col items-center justify-end h-full relative w-6 sm:w-10 lg:w-14">
                                     <div class="absolute flex flex-col items-center pb-2 opacity-0 bar-chart-col-text z-20 transition-all" style="bottom: ${ppH}%">
                                         <span class="text-[10px] sm:text-xs font-bold text-green-800 whitespace-nowrap bg-white/90 backdrop-blur-sm px-1.5 py-0.5 rounded shadow-sm border border-green-100">${formatAutoDecimal(q.pPlan)}</span>
                                     </div>
@@ -485,18 +489,18 @@
                                 </div>
                                 
                                 ${q.showActual ? `
-                                <div class="flex flex-col items-center justify-end h-full relative w-6 sm:w-10 md:w-14">
+                                <div class="flex flex-col items-center justify-end h-full relative w-6 sm:w-10 lg:w-14">
                                     <div class="absolute flex flex-col items-center pb-2 opacity-0 bar-chart-col-text z-30 transition-all" style="bottom: ${paH}%">
-                                        <span class="${pBadgeClass} text-[10px] sm:text-[11px] px-1.5 py-0.5 rounded shadow-md mb-1 whitespace-nowrap font-bold">${q.pPct}%</span>
+                                        <span class="${pBadgeClass} text-[10px] sm:text-[11px] px-1.5 py-0.5 rounded shadow-md mb-1 whitespace-nowrap font-bold border">${q.pPct}%</span>
                                         <span class="text-[10px] sm:text-xs font-bold text-green-900 whitespace-nowrap bg-white/90 backdrop-blur-sm px-1.5 py-0.5 rounded shadow-sm border border-green-200">${formatAutoDecimal(q.pAct)}</span>
                                     </div>
                                     <div class="w-full bg-green-500 rounded-t-sm bar-chart-col shadow-md border border-green-600" style="height: 0%" data-h="${paH}"></div>
                                 </div>
-                                ` : `<div class="w-6 sm:w-10 md:w-14 bg-transparent"></div>`}
+                                ` : `<div class="w-6 sm:w-10 lg:w-14 bg-transparent"></div>`}
                                 
-                                <div class="w-4 sm:w-8"></div>
+                                <div class="w-3 sm:w-6"></div>
 
-                                <div class="flex flex-col items-center justify-end h-full relative w-6 sm:w-10 md:w-14">
+                                <div class="flex flex-col items-center justify-end h-full relative w-6 sm:w-10 lg:w-14">
                                     <div class="absolute flex flex-col items-center pb-2 opacity-0 bar-chart-col-text z-20 transition-all" style="bottom: ${bpH}%">
                                         <span class="text-[10px] sm:text-xs font-bold text-amber-800 whitespace-nowrap bg-white/90 backdrop-blur-sm px-1.5 py-0.5 rounded shadow-sm border border-amber-100">${formatMoney(q.bPlan)}</span>
                                     </div>
@@ -504,28 +508,28 @@
                                 </div>
 
                                 ${q.showActual ? `
-                                <div class="flex flex-col items-center justify-end h-full relative w-6 sm:w-10 md:w-14">
+                                <div class="flex flex-col items-center justify-end h-full relative w-6 sm:w-10 lg:w-14">
                                     <div class="absolute flex flex-col items-center pb-2 opacity-0 bar-chart-col-text z-30 transition-all" style="bottom: ${baH}%">
-                                        <span class="${bBadgeClass} text-[10px] sm:text-[11px] px-1.5 py-0.5 rounded shadow-md mb-1 whitespace-nowrap font-bold">${q.bPct}%</span>
+                                        <span class="${bBadgeClass} text-[10px] sm:text-[11px] px-1.5 py-0.5 rounded shadow-md mb-1 whitespace-nowrap font-bold border">${q.bPct}%</span>
                                         <span class="text-[10px] sm:text-xs font-bold text-amber-950 whitespace-nowrap bg-white/90 backdrop-blur-sm px-1.5 py-0.5 rounded shadow-sm border border-amber-200">${formatMoney(q.bAct)}</span>
                                     </div>
                                     <div class="w-full bg-amber-500 rounded-t-sm bar-chart-col shadow-md border border-amber-600" style="height: 0%" data-h="${baH}"></div>
                                 </div>
-                                ` : `<div class="w-6 sm:w-10 md:w-14 bg-transparent"></div>`}
+                                ` : `<div class="w-6 sm:w-10 lg:w-14 bg-transparent"></div>`}
                                 
                             </div>
 
-                            <div class="mt-8 mb-2 px-5 py-1.5 ${labelBgClass} rounded-full text-[13px] sm:text-sm font-bold shadow-sm z-20 text-center w-3/4 truncate">
+                            <div class="mt-4 mb-2 px-4 py-1.5 ${labelBgClass} rounded-full text-[13px] sm:text-sm font-bold shadow-sm z-20 text-center w-[85%] truncate">
                                 ${q.name}
                             </div>
                         </div>
                     `;
                 });
 
-                // แอนิเมชันให้แท่งกราฟและตัวเลขโผล่ขึ้นมาพร้อมกัน
+                // แอนิเมชันกราฟ (แยกการดึง Class เพื่อไม่ให้ตีกับตารางด้านล่าง)
                 setTimeout(() => {
-                    document.querySelectorAll('.bar-chart-col').forEach(bar => { bar.style.width = bar.getAttribute('data-h') + '%'; });
-                    document.querySelectorAll('.bar-chart-col-text').forEach(text => { text.classList.remove('opacity-0'); });
+                    document.querySelectorAll('#combined-bar-chart-container .bar-chart-col').forEach(bar => { bar.style.height = bar.getAttribute('data-h') + '%'; });
+                    document.querySelectorAll('#combined-bar-chart-container .bar-chart-col-text').forEach(text => { text.classList.remove('opacity-0'); });
                 }, 150);
 
                 // ==========================================
@@ -628,8 +632,13 @@
                     `;
                 });
 
+                setTimeout(() => {
+                    document.querySelectorAll('#table-body .bar-chart-col').forEach(bar => { bar.style.width = bar.getAttribute('data-h') + '%'; });
+                    document.querySelectorAll('#table-body .bar-chart-col-text').forEach(textEl => { textEl.style.left = textEl.getAttribute('data-left') + '%'; });
+                }, 100);
+
                 // ==========================================
-                // 7. ปัญหาและอุปสรรค
+                // 6. ปัญหาและอุปสรรค
                 // ==========================================
                 let issuesHtml = '';
                 
