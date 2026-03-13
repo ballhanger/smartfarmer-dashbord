@@ -211,51 +211,55 @@
             currentQuarter = 4; isLastMonthOfQuarter = (currentMonth === 9); 
         }
 
-        document.querySelectorAll('.display-quarter').forEach(el => el.textContent = currentQuarter);
-
-        function fetchCSVData(url) {
-            return new Promise((resolve, reject) => {
-                Papa.parse(url, {
-                    download: true, header: true, skipEmptyLines: true,
-                    complete: function(results) { resolve(results.data); },
-                    error: function(error) { reject(error); }
-                });
-            });
-        }
-
-        const formatNum = (num) => new Intl.NumberFormat('th-TH').format(num);
-        const formatMoney = (num) => new Intl.NumberFormat('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(num);
-
-        const getStatusStyles = (status) => {
-            if (!status) return "bg-slate-100 text-slate-600 border-slate-300";
-            if (status.includes("เป็นไปตามแผน")) return "bg-green-100 text-green-800 border-green-300";
-            if (status.includes("ล่าช้า")) return "bg-yellow-100 text-yellow-800 border-yellow-300 status-highlight";
-            if (status.includes("เสี่ยง")) return "bg-red-100 text-red-800 border-red-300";
-            if (status.includes("ยังไม่ดำเนินการ") || status.includes("ไม่มี")) return "bg-red-600 text-white border-red-800 shadow-md animate-pulse ring-2 ring-red-300 font-bold";
-            return "bg-slate-100 text-slate-600 border-slate-300";
-        };
-
-        const getSafeNum = (row, keyStr) => {
-            let val = row[keyStr] || row[keyStr + " "] || "0";
-            return parseFloat(String(val).replace(/,/g, '')) || 0;
-        };
-
-        const getDynamicStatus = (row, quarter) => {
-            for (let i = quarter; i >= 1; i--) {
-                let s = row["สถานะไตรมาส " + i] || row["สถานะไตรมาส " + i + " "];
-                if (s && s.trim() !== "") return s;
-            }
-            return "❌ ยังไม่ดำเนินการ";
-        };
-
-        const calcSafePct = (actual, plan) => {
-            if (plan > 0) return ((actual / plan) * 100).toFixed(2);
-            if (actual > 0) return 100.00;
-            return 0;
-        };
-
         document.addEventListener('DOMContentLoaded', async () => {
             try {
+                // แก้ไขปัญหาชื่อโครงการไม่ขึ้น (ย้ายมาไว้บรรทัดแรกสุด)
+                document.getElementById('project-name').textContent = "โครงการพัฒนาทักษะและแนวคิดผู้ประกอบการธุรกิจเกษตร (เกษตรกรปราดเปรื่อง (Smart Farmer)) ปีงบประมาณ 2569";
+                
+                // เซ็ตเลขไตรมาสอัตโนมัติ
+                document.querySelectorAll('.display-quarter').forEach(el => el.textContent = currentQuarter);
+
+                const formatNum = (num) => new Intl.NumberFormat('th-TH').format(num);
+                const formatMoney = (num) => new Intl.NumberFormat('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(num);
+
+                const getStatusStyles = (status) => {
+                    if (!status) return "bg-slate-100 text-slate-600 border-slate-300";
+                    if (status.includes("เป็นไปตามแผน")) return "bg-green-100 text-green-800 border-green-300";
+                    if (status.includes("ล่าช้า")) return "bg-yellow-100 text-yellow-800 border-yellow-300 status-highlight";
+                    if (status.includes("เสี่ยง")) return "bg-red-100 text-red-800 border-red-300";
+                    if (status.includes("ยังไม่ดำเนินการ") || status.includes("ไม่มี")) return "bg-red-600 text-white border-red-800 shadow-md animate-pulse ring-2 ring-red-300 font-bold";
+                    return "bg-slate-100 text-slate-600 border-slate-300";
+                };
+
+                const getSafeNum = (row, keyStr) => {
+                    let val = row[keyStr] || row[keyStr + " "] || "0";
+                    return parseFloat(String(val).replace(/,/g, '')) || 0;
+                };
+
+                const getDynamicStatus = (row, quarter) => {
+                    for (let i = quarter; i >= 1; i--) {
+                        let s = row["สถานะไตรมาส " + i] || row["สถานะไตรมาส " + i + " "];
+                        if (s && s.trim() !== "") return s;
+                    }
+                    return "❌ ยังไม่ดำเนินการ";
+                };
+
+                const calcSafePct = (actual, plan) => {
+                    if (plan > 0) return ((actual / plan) * 100).toFixed(2);
+                    if (actual > 0) return 100.00;
+                    return 0;
+                };
+
+                const fetchCSVData = (url) => {
+                    return new Promise((resolve, reject) => {
+                        Papa.parse(url, {
+                            download: true, header: true, skipEmptyLines: true,
+                            complete: function(results) { resolve(results.data); },
+                            error: function(error) { reject(error); }
+                        });
+                    });
+                };
+
                 const rawData = await fetchCSVData(CSV_URL);
                 const allRows = rawData.map((row, index) => {
                     return {
@@ -487,12 +491,12 @@
                 });
 
                 setTimeout(() => {
-                    document.querySelectorAll('.bar-chart-col').forEach(bar => { bar.style.width = bar.getAttribute('data-h') + '%'; });
+                    document.querySelectorAll('.bar-chart-col').forEach(bar => { bar.style.height = bar.getAttribute('data-h') + '%'; });
                     document.querySelectorAll('.bar-chart-col-text').forEach(textEl => { textEl.style.left = textEl.getAttribute('data-left') + '%'; });
                 }, 100);
 
                 // ==========================================
-                // 5. การ์ดสรุปสถานะกิจกรรมทั้งหมด
+                // 4. การ์ดสรุปสถานะกิจกรรมทั้งหมด
                 // ==========================================
                 const summary = {
                     total: activities.length,
@@ -538,7 +542,7 @@
                 `;
 
                 // ==========================================
-                // 6. ตารางกิจกรรม
+                // 5. ตารางกิจกรรม
                 // ==========================================
                 const tbody = document.getElementById('table-body');
                 tbody.innerHTML = '';
