@@ -84,9 +84,9 @@
                         </div>
                     </div>
                 </div>
-                <div class="mt-4 flex flex-col items-center text-center">
+                <div class="mt-4 flex flex-col items-center text-center w-full">
                     <p class="text-sm text-purple-800 font-bold mb-2">สถานะโครงการล่าสุด (เทียบแผนสะสมถึงไตรมาส <span id="display-quarter"></span>)</p>
-                    <div id="project-status" class="inline-flex items-center justify-center px-4 py-3 rounded-xl text-lg sm:text-xl font-bold border-2 shadow-sm w-full bg-white">
+                    <div id="project-status" class="inline-flex items-center justify-center px-4 py-3 rounded-xl text-lg sm:text-[19px] font-bold border-2 shadow-sm w-full bg-white leading-tight">
                         กำลังโหลด...
                     </div>
                 </div>
@@ -100,7 +100,7 @@
                 <div class="flex-grow pt-10 relative h-72">
                     <div class="flex justify-center space-x-6 mb-6 text-sm font-medium text-orange-900" id="legend-container">
                         <div class="flex items-center"><div class="w-4 h-4 bg-orange-200 mr-2 rounded-sm border border-orange-300"></div> แผนสะสม</div>
-                        </div>
+                    </div>
                     <div class="absolute inset-0 top-16 bottom-8 border-b-2 border-orange-300 flex items-end justify-around px-2 sm:px-4" id="bar-chart-container">
                     </div>
                 </div>
@@ -131,8 +131,8 @@
                             <th class="px-4 py-4 font-bold text-center w-20">หน่วยนับ</th>
                             <th class="px-4 py-4 font-bold text-right w-24">เป้าหมาย</th>
                             <th class="px-4 py-4 font-bold text-right w-24">ผลงานสะสม</th>
-                            <th class="px-6 py-4 font-bold">ความก้าวหน้า (เปรียบเทียบแผนสะสม)</th>
-                            <th class="px-6 py-4 font-bold text-center w-36">สถานะ</th>
+                            <th class="px-6 py-4 font-bold">ความก้าวหน้า (เปรียบเทียบเป้าหมาย)</th>
+                            <th class="px-6 py-4 font-bold text-center w-36">สถานะปัจจุบัน</th>
                         </tr>
                     </thead>
                     <tbody id="table-body">
@@ -153,20 +153,31 @@
     </div>
 
     <script>
-        // 📌 1. ใส่ลิงก์ CSV
+        // 📌 1. ใส่ลิงก์ CSV ของคุณ
         const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR0SZMY4dcJHbXAFHOXFJmmFyewUDjWy2yFVKCkJqoG4Iz-kTa84-LpxORbOTJoDGWOkz2nPa1usyJ1/pub?gid=1908480955&single=true&output=csv"; 
 
-        // 📌 2. กำหนดไตรมาสปัจจุบัน (เปลี่ยนเป็น 1, 2, 3 หรือ 4 ตามช่วงเวลาจริง)
-        const currentQuarter = 2;
+        // 📌 2. สมองกลคำนวณไตรมาสปัจจุบันจากเวลาจริง (ตามปีงบประมาณ ต.ค. - ก.ย.)
+        const today = new Date();
+        const currentMonth = today.getMonth() + 1; // 1-12
+        let currentQuarter = 1;
+        let isLastMonthOfQuarter = false;
+
+        if (currentMonth >= 10 && currentMonth <= 12) { 
+            currentQuarter = 1; isLastMonthOfQuarter = (currentMonth === 12); 
+        } else if (currentMonth >= 1 && currentMonth <= 3) { 
+            currentQuarter = 2; isLastMonthOfQuarter = (currentMonth === 3); 
+        } else if (currentMonth >= 4 && currentMonth <= 6) { 
+            currentQuarter = 3; isLastMonthOfQuarter = (currentMonth === 6); 
+        } else if (currentMonth >= 7 && currentMonth <= 9) { 
+            currentQuarter = 4; isLastMonthOfQuarter = (currentMonth === 9); 
+        }
 
         document.getElementById('display-quarter').textContent = currentQuarter;
 
         function fetchCSVData(url) {
             return new Promise((resolve, reject) => {
                 Papa.parse(url, {
-                    download: true,
-                    header: true,
-                    skipEmptyLines: true,
+                    download: true, header: true, skipEmptyLines: true,
                     complete: function(results) { resolve(results.data); },
                     error: function(error) { reject(error); }
                 });
@@ -189,9 +200,18 @@
             return parseFloat(String(val).replace(/,/g, '')) || 0;
         };
 
+        // ฟังก์ชันดึงสถานะรายกิจกรรมโดยอิงจากไตรมาสปัจจุบันอัตโนมัติ
+        const getDynamicStatus = (row, quarter) => {
+            for (let i = quarter; i >= 1; i--) {
+                let s = row["สถานะไตรมาส " + i] || row["สถานะไตรมาส " + i + " "];
+                if (s && s.trim() !== "") return s;
+            }
+            return "❌ ยังไม่ดำเนินการ";
+        };
+
         document.addEventListener('DOMContentLoaded', async () => {
             try {
-                // อัปเดตชื่อโครงการ
+                // 1. อัปเดตชื่อโครงการ
                 document.getElementById('project-name').textContent = "โครงการพัฒนาทักษะและแนวคิดผู้ประกอบการธุรกิจเกษตร (เกษตรกรปราดเปรื่อง (Smart Farmer)) ปีงบประมาณ 2569";
 
                 const rawData = await fetchCSVData(CSV_URL);
@@ -203,66 +223,71 @@
                         unit: row["หน่วยนับ"] || "-",
                         target: getSafeNum(row, "เป้าหมาย"),
                         actual: getSafeNum(row, "ผลการดำเนินงานสะสม"),
-                        planQ1: getSafeNum(row, "แผนไตรมาส 1"),
-                        actualQ1: getSafeNum(row, "ผลไตรมาส 1"),
-                        planQ2: getSafeNum(row, "แผนไตรมาส 2"),
-                        actualQ2: getSafeNum(row, "ผลไตรมาส 2"),
-                        planQ3: getSafeNum(row, "แผนไตรมาส 3"),
-                        actualQ3: getSafeNum(row, "ผลไตรมาส 3"),
-                        planQ4: getSafeNum(row, "แผนไตรมาส 4"),
-                        actualQ4: getSafeNum(row, "ผลไตรมาส 4"),
-                        status: row["สถานะไตรมาส 2"] || row["สถานะไตรมาส 1"] || "❌ ยังไม่ดำเนินการ",
+                        planQ1: getSafeNum(row, "แผนไตรมาส 1"), actualQ1: getSafeNum(row, "ผลไตรมาส 1"),
+                        planQ2: getSafeNum(row, "แผนไตรมาส 2"), actualQ2: getSafeNum(row, "ผลไตรมาส 2"),
+                        planQ3: getSafeNum(row, "แผนไตรมาส 3"), actualQ3: getSafeNum(row, "ผลไตรมาส 3"),
+                        planQ4: getSafeNum(row, "แผนไตรมาส 4"), actualQ4: getSafeNum(row, "ผลไตรมาส 4"),
+                        status: getDynamicStatus(row, currentQuarter), // ดึงสถานะอัตโนมัติ
                         issue: row["ปัญหาและอุปสรรค"] || row["ปัญหาและอุปสรรค "] || ""
                     };
                 }).filter(act => act.name !== "-" && !act.name.includes("โครงการพัฒนาทักษะ"));
 
                 // ==========================================
-                // 1. คำนวณภาพรวมจาก "กิจกรรม KPI"
+                // 2. คำนวณภาพรวมจาก "กิจกรรม KPI" แบบใช้ Grace Period
                 // ==========================================
                 const kpiActivities = activities.filter(act => act.name.includes("(KPI)"));
 
                 const totalTarget = kpiActivities.reduce((sum, act) => sum + act.target, 0);
                 const totalActual = kpiActivities.reduce((sum, act) => sum + act.actual, 0);
-                
-                // เปอร์เซ็นต์รวมตลอดโครงการ (แสดงที่วงกลม)
                 const percentCum = totalTarget > 0 ? ((totalActual / totalTarget) * 100).toFixed(2) : "0.00";
                 
                 const planQ1 = kpiActivities.reduce((sum, act) => sum + act.planQ1, 0);
-                const actualQ1 = kpiActivities.reduce((sum, act) => sum + act.actualQ1, 0);
                 const planQ2 = kpiActivities.reduce((sum, act) => sum + act.planQ2, 0);
-                const actualQ2 = kpiActivities.reduce((sum, act) => sum + act.actualQ2, 0);
                 const planQ3 = kpiActivities.reduce((sum, act) => sum + act.planQ3, 0);
-                const actualQ3 = kpiActivities.reduce((sum, act) => sum + act.actualQ3, 0);
                 const planQ4 = kpiActivities.reduce((sum, act) => sum + act.planQ4, 0);
-                const actualQ4 = kpiActivities.reduce((sum, act) => sum + act.actualQ4, 0);
 
-                // 📌 คำนวณแผนสะสมและผลสะสม "จนถึงไตรมาสปัจจุบัน"
                 let currentPlanCum = 0;
-                let currentActualCum = 0;
+                let previousPlanCum = 0;
 
-                if (currentQuarter >= 1) { currentPlanCum += planQ1; currentActualCum += actualQ1; }
-                if (currentQuarter >= 2) { currentPlanCum += planQ2; currentActualCum += actualQ2; }
-                if (currentQuarter >= 3) { currentPlanCum += planQ3; currentActualCum += actualQ3; }
-                if (currentQuarter >= 4) { currentPlanCum += planQ4; currentActualCum += actualQ4; }
-
-                // เปอร์เซ็นต์สะสม ณ ปัจจุบัน สำหรับคิดสถานะ
-                const currentPercent = currentPlanCum > 0 ? (currentActualCum / currentPlanCum) * 100 : 0;
+                if (currentQuarter >= 1) { currentPlanCum += planQ1; previousPlanCum = 0; }
+                if (currentQuarter >= 2) { currentPlanCum += planQ2; previousPlanCum += planQ1; }
+                if (currentQuarter >= 3) { currentPlanCum += planQ3; previousPlanCum += (planQ1 + planQ2); }
+                if (currentQuarter >= 4) { currentPlanCum += planQ4; previousPlanCum += (planQ1 + planQ2 + planQ3); }
 
                 let projectStatus = "";
+                let displayPct = 0;
 
                 if (currentPlanCum === 0) {
-                    if (currentQuarter === 1) projectStatus = "⚪ มีแผนอยู่ใน Q2/Q3/Q4";
+                    if (currentQuarter === 1) projectStatus = "⚪ มีแผนอยู่ในไตรมาสถัดไป";
                     else if (currentQuarter === 2) projectStatus = "⚪ มีแผนอยู่ใน Q3/Q4";
                     else if (currentQuarter === 3) projectStatus = "⚪ มีแผนอยู่ใน Q4";
                     else projectStatus = "❌ ยังไม่ดำเนินการ";
                 } else {
-                    if (currentPercent >= 100) projectStatus = "🟢 เป็นไปตามแผน";
-                    else if (currentPercent >= 50.00) projectStatus = "🟡 ล่าช้า";
-                    else if (currentPercent > 0) projectStatus = "🔴 เสี่ยง";
-                    else projectStatus = "❌ ยังไม่ดำเนินการ";
+                    if (totalActual >= currentPlanCum) {
+                        projectStatus = "🟢 เป็นไปตามแผน";
+                        displayPct = (totalActual / currentPlanCum) * 100;
+                    } else {
+                        // เช็ก Grace Period (ถ้ายังไม่สิ้นไตรมาส ให้ดูแผนเก่าก่อน)
+                        if (!isLastMonthOfQuarter && currentQuarter > 1) {
+                            if (totalActual >= previousPlanCum) {
+                                projectStatus = `🟢 เป็นไปตามแผน (กำลังรันงาน Q${currentQuarter})`;
+                                displayPct = previousPlanCum > 0 ? (totalActual / previousPlanCum) * 100 : 100;
+                            } else {
+                                const pct = previousPlanCum > 0 ? (totalActual / previousPlanCum) * 100 : 0;
+                                displayPct = pct;
+                                if (pct >= 50) projectStatus = "🟡 ล่าช้า";
+                                else projectStatus = "🔴 เสี่ยง";
+                            }
+                        } else {
+                            const pct = currentPlanCum > 0 ? (totalActual / currentPlanCum) * 100 : 0;
+                            displayPct = pct;
+                            if (pct >= 50) projectStatus = "🟡 ล่าช้า";
+                            else projectStatus = "🔴 เสี่ยง";
+                        }
+                    }
                 }
 
-                // นำไปแสดงผล (ตัวเลขจัดกึ่งกลางสวยงาม)
+                // นำไปแสดงผล
                 document.getElementById('kpi-target').innerHTML = `${formatNum(totalTarget)} <span class="text-xl sm:text-2xl font-bold text-indigo-700/70 ml-1">ราย</span>`;
                 document.getElementById('kpi-actual').innerHTML = `${formatNum(totalActual)} <span class="text-xl sm:text-2xl font-bold text-emerald-700/70 ml-1">ราย</span>`;
                 
@@ -274,25 +299,27 @@
                 if (projectStatus.includes("เสี่ยง")) pieColor = "#ef4444"; 
                 if (currentPlanCum === 0) pieColor = "#cbd5e1";
 
-                setTimeout(() => {
-                    pieChart.style.background = `conic-gradient(${pieColor} 0% ${percentCum}%, #f1f5f9 ${percentCum}% 100%)`;
-                }, 100);
+                setTimeout(() => { pieChart.style.background = `conic-gradient(${pieColor} 0% ${percentCum}%, #f1f5f9 ${percentCum}% 100%)`; }, 100);
 
-                // 📌 อัปเดตข้อความสถานะให้มีเปอร์เซ็นต์ต่อท้าย
+                // แสดงสถานะพร้อม % ต่อท้าย
                 const statusEl = document.getElementById('project-status');
                 let displayStatusText = projectStatus;
                 if (currentPlanCum > 0) {
-                    displayStatusText = `${projectStatus} (${currentPercent.toFixed(2)}%)`;
+                    displayStatusText = `${projectStatus} (${displayPct > 100 ? 100 : displayPct.toFixed(2)}%)`;
                 }
                 statusEl.textContent = displayStatusText;
                 statusEl.className = `inline-flex items-center justify-center px-4 py-3 rounded-xl text-[17px] sm:text-[19px] font-bold border-2 shadow-sm w-full bg-white ${getStatusStyles(projectStatus)}`;
 
                 // ==========================================
-                // 2. กราฟแท่งรายไตรมาส (เพิ่มเปอร์เซ็นต์เหนือแท่งกราฟ)
+                // 3. กราฟแท่งรายไตรมาส (พร้อม % เทียบแผนสะสมของไตรมาสนั้นๆ)
                 // ==========================================
                 const colors = ['bg-[#0ea5e9]', 'bg-[#16a34a]', 'bg-[#8b5cf6]', 'bg-[#f59e0b]'];
                 
-                // คำนวณเปอร์เซ็นต์ของแต่ละไตรมาสเพื่อแสดง
+                const actualQ1 = kpiActivities.reduce((sum, act) => sum + act.actualQ1, 0);
+                const actualQ2 = kpiActivities.reduce((sum, act) => sum + act.actualQ2, 0);
+                const actualQ3 = kpiActivities.reduce((sum, act) => sum + act.actualQ3, 0);
+                const actualQ4 = kpiActivities.reduce((sum, act) => sum + act.actualQ4, 0);
+
                 const pctQ1 = planQ1 > 0 ? ((actualQ1 / planQ1) * 100).toFixed(2) : 0;
                 const pctQ2 = (planQ1 + planQ2) > 0 ? (((actualQ1 + actualQ2) / (planQ1 + planQ2)) * 100).toFixed(2) : 0;
                 const pctQ3 = (planQ1 + planQ2 + planQ3) > 0 ? (((actualQ1 + actualQ2 + actualQ3) / (planQ1 + planQ2 + planQ3)) * 100).toFixed(2) : 0;
@@ -305,11 +332,8 @@
                     { name: 'ไตรมาส 4', plan: planQ1 + planQ2 + planQ3 + planQ4, actual: actualQ1 + actualQ2 + actualQ3 + actualQ4, showActual: currentQuarter >= 4, actualColor: colors[3], pct: pctQ4 }
                 ];
                 
-                // วาด Legend
                 let legendHtml = '';
-                for(let i=1; i<=currentQuarter; i++){
-                    legendHtml += `<div class="flex items-center"><div class="w-4 h-4 ${colors[i-1]} mr-2 rounded-sm"></div> ผล Q${i}</div>`;
-                }
+                for(let i=1; i<=currentQuarter; i++){ legendHtml += `<div class="flex items-center"><div class="w-4 h-4 ${colors[i-1]} mr-2 rounded-sm"></div> ผล Q${i}</div>`; }
                 document.getElementById('legend-container').innerHTML += legendHtml;
 
                 const maxVal = Math.max(...qData.map(d => d.plan)) * 1.25 || 1; 
@@ -350,7 +374,7 @@
                 }, 100);
 
                 // ==========================================
-                // 3. การ์ดสรุปสถานะกิจกรรมทั้งหมด
+                // 4. การ์ดสรุปสถานะกิจกรรมทั้งหมด
                 // ==========================================
                 const summary = {
                     total: activities.length,
@@ -365,50 +389,38 @@
                     <div class="col-span-2 md:col-span-1 bg-white rounded-xl p-4 flex flex-col text-center border-2 border-slate-200 shadow-sm">
                         <p class="text-sm font-bold text-slate-500 mb-1">กิจกรรมทั้งหมด</p>
                         <p class="text-4xl font-extrabold text-slate-800 mb-3">${summary.total}</p>
-                        <div class="mt-auto">
-                            <span class="inline-block text-xs sm:text-sm font-bold text-slate-600 bg-slate-100 px-3 py-1 rounded-full border border-slate-200 w-full whitespace-nowrap">รวมทุกสถานะ</span>
-                        </div>
+                        <div class="mt-auto"><span class="inline-block text-xs sm:text-sm font-bold text-slate-600 bg-slate-100 px-3 py-1 rounded-full border border-slate-200 w-full whitespace-nowrap">รวมทุกสถานะ</span></div>
                     </div>
                     <div class="bg-white rounded-xl p-4 flex flex-col border-2 border-green-200 text-center shadow-sm">
                         <p class="text-sm font-bold text-green-700 mb-1">เป็นไปตามแผน</p>
                         <p class="text-4xl font-extrabold text-green-700 mb-3">${summary.onTrack}</p>
-                        <div class="mt-auto">
-                            <span class="inline-block text-xs sm:text-sm font-bold text-green-800 bg-green-100 px-3 py-1 rounded-full border border-green-300 w-full whitespace-nowrap">ร้อยละผลงาน &ge; 100</span>
-                        </div>
+                        <div class="mt-auto"><span class="inline-block text-xs sm:text-sm font-bold text-green-800 bg-green-100 px-3 py-1 rounded-full border border-green-300 w-full whitespace-nowrap">ร้อยละผลงาน &ge; 100</span></div>
                     </div>
                     <div class="bg-white rounded-xl p-4 flex flex-col border-2 border-yellow-300 text-center shadow-sm">
                         <p class="text-sm font-bold text-yellow-600 mb-1">ล่าช้า</p>
                         <p class="text-4xl font-extrabold text-yellow-600 mb-3">${summary.delayed}</p>
-                        <div class="mt-auto">
-                            <span class="inline-block text-xs sm:text-sm font-bold text-yellow-800 bg-yellow-100 px-2 py-1 rounded-full border border-yellow-400 w-full whitespace-nowrap">ร้อยละ 50.00 - 99.99</span>
-                        </div>
+                        <div class="mt-auto"><span class="inline-block text-xs sm:text-sm font-bold text-yellow-800 bg-yellow-100 px-2 py-1 rounded-full border border-yellow-400 w-full whitespace-nowrap">ร้อยละ 50.00 - 99.99</span></div>
                     </div>
                     <div class="bg-white rounded-xl p-4 flex flex-col border-2 border-red-200 text-center shadow-sm">
                         <p class="text-sm font-bold text-red-600 mb-1">เสี่ยง</p>
                         <p class="text-4xl font-extrabold text-red-600 mb-3">${summary.atRisk}</p>
-                        <div class="mt-auto">
-                            <span class="inline-block text-xs sm:text-sm font-bold text-red-800 bg-red-100 px-2 py-1 rounded-full border border-red-300 w-full whitespace-nowrap">ร้อยละ 0.01 - 49.99</span>
-                        </div>
+                        <div class="mt-auto"><span class="inline-block text-xs sm:text-sm font-bold text-red-800 bg-red-100 px-2 py-1 rounded-full border border-red-300 w-full whitespace-nowrap">ร้อยละ 0.01 - 49.99</span></div>
                     </div>
                     <div class="bg-white rounded-xl p-4 flex flex-col border-2 border-red-400 text-center shadow-sm relative overflow-hidden">
                         <div class="absolute inset-0 bg-red-50 opacity-50 animate-pulse"></div>
                         <p class="text-sm font-bold text-red-700 mb-1 relative z-10">ยังไม่ดำเนินการ</p>
                         <p class="text-4xl font-extrabold text-red-700 mb-3 relative z-10">${summary.notStartedSevere}</p>
-                        <div class="mt-auto relative z-10">
-                            <span class="inline-block text-xs sm:text-sm font-bold text-white bg-red-600 px-3 py-1 rounded-full shadow-sm w-full whitespace-nowrap">ร้อยละผลงาน = 0</span>
-                        </div>
+                        <div class="mt-auto relative z-10"><span class="inline-block text-xs sm:text-sm font-bold text-white bg-red-600 px-3 py-1 rounded-full shadow-sm w-full whitespace-nowrap">ร้อยละผลงาน = 0</span></div>
                     </div>
                     <div class="col-span-2 md:col-span-1 bg-white rounded-xl p-4 flex flex-col text-center border-2 border-slate-200 border-dashed shadow-sm">
                         <p class="text-sm font-bold text-slate-400 mb-1">มีแผนในไตรมาสถัดไป</p>
                         <p class="text-4xl font-extrabold text-slate-400 mb-3">${summary.notStarted}</p>
-                        <div class="mt-auto">
-                            <span class="inline-block text-xs sm:text-sm font-bold text-slate-500 bg-slate-50 px-2 py-1 rounded-full border border-slate-200 w-full whitespace-nowrap">ยังไม่ถึงช่วงแผนงาน</span>
-                        </div>
+                        <div class="mt-auto"><span class="inline-block text-xs sm:text-sm font-bold text-slate-500 bg-slate-50 px-2 py-1 rounded-full border border-slate-200 w-full whitespace-nowrap">ยังไม่ถึงช่วงแผนงาน</span></div>
                     </div>
                 `;
 
                 // ==========================================
-                // 4. ตารางกิจกรรม
+                // 5. ตารางกิจกรรม
                 // ==========================================
                 const tbody = document.getElementById('table-body');
                 tbody.innerHTML = '';
@@ -467,15 +479,15 @@
                 }, 100);
 
                 // ==========================================
-                // 5. ปัญหาและอุปสรรค
+                // 6. ปัญหาและอุปสรรค
                 // ==========================================
                 let issuesHtml = '';
                 
                 if (projectStatus.includes("ล่าช้า") || projectStatus.includes("เสี่ยง")) {
                     issuesHtml += `
                         <div class="bg-white border-l-4 border-red-500 p-5 rounded-r-xl shadow-sm mb-6">
-                            <h4 class="font-bold text-red-800 mb-2 flex items-center">ภาพรวมโครงการ (สถานะ ${projectStatus})</h4>
-                            <p class="text-sm text-red-700 leading-relaxed">ผลการดำเนินงานรวมของกิจกรรมหลัก (KPI) เมื่อเทียบกับแผนงานสะสมจนถึงไตรมาสปัจจุบัน อยู่ในเกณฑ์ล่าช้า/เสี่ยง จึงต้องเร่งรัดการจัดกิจกรรมและติดตามแก้ไขปัญหาในพื้นที่อย่างใกล้ชิด</p>
+                            <h4 class="font-bold text-red-800 mb-2 flex items-center">ภาพรวมโครงการ (สถานะ ${projectStatus.replace(/\\(.*\\)/, '')})</h4>
+                            <p class="text-sm text-red-700 leading-relaxed">ผลการดำเนินงานรวมของกิจกรรมหลัก (KPI) เมื่อเทียบกับแผนงานสะสม อยู่ในเกณฑ์ล่าช้า/เสี่ยง จึงต้องเร่งรัดการจัดกิจกรรมและติดตามแก้ไขปัญหาในพื้นที่อย่างใกล้ชิด</p>
                         </div>
                     `;
                 }
