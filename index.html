@@ -44,7 +44,7 @@
             <h1 id="project-name" class="text-xl md:text-2xl font-bold text-black leading-relaxed">กำลังโหลดข้อมูล...</h1>
         </header>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div class="bg-indigo-50 rounded-2xl shadow-sm border border-indigo-100 p-6 flex flex-col relative border-l-4 border-l-indigo-500 min-h-[160px]">
                 <div class="w-full text-left z-10 mb-2">
                     <p class="text-base font-bold text-indigo-900">เป้าหมายโครงการ <span class="text-sm font-medium text-indigo-700/80">(เป้าหมายจาก พรบ.69 เฉพาะ KPI)</span></p>
@@ -66,6 +66,29 @@
                 </div>
                 <div class="bg-emerald-100 p-4 rounded-full absolute right-6 top-1/2 -translate-y-1/2 opacity-30 hidden sm:block pointer-events-none">
                     <svg class="w-10 h-10 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path></svg>
+                </div>
+            </div>
+        </div>
+
+        <div id="budget-section" class="hidden bg-amber-50 rounded-2xl shadow-sm border border-amber-100 p-6 mb-8 relative border-l-4 border-l-amber-500">
+            <h3 class="text-lg font-bold mb-4 flex items-center text-amber-900 border-b border-amber-200 pb-2">
+                <svg class="w-6 h-6 mr-2 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                ผลการเบิกจ่ายงบประมาณภาพรวมโครงการ
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white rounded-xl p-4 border border-amber-200 text-center shadow-sm flex flex-col justify-center">
+                    <p class="text-sm font-bold text-slate-500 mb-2">งบประมาณที่ได้รับจัดสรร</p>
+                    <h2 class="text-3xl lg:text-4xl font-extrabold text-amber-700" id="budget-target">-</h2>
+                </div>
+                <div class="bg-white rounded-xl p-4 border border-amber-200 text-center shadow-sm flex flex-col justify-center">
+                    <p class="text-sm font-bold text-slate-500 mb-2">ผลการเบิกจ่ายสะสม</p>
+                    <h2 class="text-3xl lg:text-4xl font-extrabold text-emerald-600" id="budget-actual">-</h2>
+                </div>
+                <div class="bg-white rounded-xl p-4 border border-amber-200 flex flex-col items-center justify-center shadow-sm">
+                    <p class="text-sm font-bold text-slate-500 mb-3">สถานะการเบิกจ่าย (เทียบแผนสะสม)</p>
+                    <div id="budget-status" class="inline-flex items-center justify-center px-4 py-2.5 rounded-xl text-md lg:text-lg font-bold border-2 w-full text-center leading-tight">
+                        กำลังโหลด...
+                    </div>
                 </div>
             </div>
         </div>
@@ -100,7 +123,7 @@
                 <div class="flex-grow pt-10 relative h-72">
                     <div class="flex justify-center space-x-6 mb-6 text-sm font-medium text-orange-900" id="legend-container">
                         <div class="flex items-center"><div class="w-4 h-4 bg-orange-200 mr-2 rounded-sm border border-orange-300"></div> แผนสะสม</div>
-                    </div>
+                        </div>
                     <div class="absolute inset-0 top-16 bottom-8 border-b-2 border-orange-300 flex items-end justify-around px-2 sm:px-4" id="bar-chart-container">
                     </div>
                 </div>
@@ -156,7 +179,7 @@
         // 📌 1. ใส่ลิงก์ CSV ของคุณ
         const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR0SZMY4dcJHbXAFHOXFJmmFyewUDjWy2yFVKCkJqoG4Iz-kTa84-LpxORbOTJoDGWOkz2nPa1usyJ1/pub?gid=1908480955&single=true&output=csv"; 
 
-        // 📌 2. สมองกลคำนวณไตรมาสปัจจุบันจากเวลาจริง (ตามปีงบประมาณ ต.ค. - ก.ย.)
+        // 📌 2. สมองกลคำนวณไตรมาสปัจจุบันจากเวลาจริง (ต.ค. - ก.ย.)
         const today = new Date();
         const currentMonth = today.getMonth() + 1; // 1-12
         let currentQuarter = 1;
@@ -184,14 +207,17 @@
             });
         }
 
+        // ฟอร์แมตตัวเลข (ถ้ามีทศนิยมให้แสดง 2 ตำแหน่ง ถ้าไม่มีก็ไม่โชว์)
         const formatNum = (num) => new Intl.NumberFormat('th-TH').format(num);
+        // ฟอร์แมตตัวเลขสำหรับงบประมาณ (บังคับทศนิยม 2 ตำแหน่งเสมอ)
+        const formatMoney = (num) => new Intl.NumberFormat('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(num);
 
         const getStatusStyles = (status) => {
             if (!status) return "bg-slate-100 text-slate-600 border-slate-300";
             if (status.includes("เป็นไปตามแผน")) return "bg-green-100 text-green-800 border-green-300";
             if (status.includes("ล่าช้า")) return "bg-yellow-100 text-yellow-800 border-yellow-300 status-highlight";
             if (status.includes("เสี่ยง")) return "bg-red-100 text-red-800 border-red-300";
-            if (status.includes("ยังไม่ดำเนินการ") || status.includes("ไม่มี")) return "bg-red-600 text-white border-red-800 shadow-md animate-pulse ring-2 ring-red-300 font-bold";
+            if (status.includes("ยังไม่ดำเนินการ") || status.includes("ไม่มีแผน")) return "bg-red-600 text-white border-red-800 shadow-md animate-pulse ring-2 ring-red-300 font-bold";
             return "bg-slate-100 text-slate-600 border-slate-300";
         };
 
@@ -200,7 +226,6 @@
             return parseFloat(String(val).replace(/,/g, '')) || 0;
         };
 
-        // ฟังก์ชันดึงสถานะรายกิจกรรมโดยอิงจากไตรมาสปัจจุบันอัตโนมัติ
         const getDynamicStatus = (row, quarter) => {
             for (let i = quarter; i >= 1; i--) {
                 let s = row["สถานะไตรมาส " + i] || row["สถานะไตรมาส " + i + " "];
@@ -211,12 +236,11 @@
 
         document.addEventListener('DOMContentLoaded', async () => {
             try {
-                // 1. อัปเดตชื่อโครงการ
                 document.getElementById('project-name').textContent = "โครงการพัฒนาทักษะและแนวคิดผู้ประกอบการธุรกิจเกษตร (เกษตรกรปราดเปรื่อง (Smart Farmer)) ปีงบประมาณ 2569";
 
                 const rawData = await fetchCSVData(CSV_URL);
                 
-                const activities = rawData.map((row, index) => {
+                const allRows = rawData.map((row, index) => {
                     return {
                         id: index + 1,
                         name: row["โครงการ/กิจกรรม"] || "-",
@@ -227,14 +251,73 @@
                         planQ2: getSafeNum(row, "แผนไตรมาส 2"), actualQ2: getSafeNum(row, "ผลไตรมาส 2"),
                         planQ3: getSafeNum(row, "แผนไตรมาส 3"), actualQ3: getSafeNum(row, "ผลไตรมาส 3"),
                         planQ4: getSafeNum(row, "แผนไตรมาส 4"), actualQ4: getSafeNum(row, "ผลไตรมาส 4"),
-                        status: getDynamicStatus(row, currentQuarter), // ดึงสถานะอัตโนมัติ
+                        status: getDynamicStatus(row, currentQuarter),
                         issue: row["ปัญหาและอุปสรรค"] || row["ปัญหาและอุปสรรค "] || ""
                     };
-                }).filter(act => act.name !== "-" && !act.name.includes("โครงการพัฒนาทักษะ"));
+                });
 
                 // ==========================================
-                // 2. คำนวณภาพรวมจาก "กิจกรรม KPI" แบบใช้ Grace Period
+                // 1. คัดแยกข้อมูลงบประมาณ (ถ้ามี)
                 // ==========================================
+                const budgetRow = allRows.find(act => act.name.includes("งบประมาณ"));
+                if (budgetRow) {
+                    document.getElementById('budget-section').classList.remove('hidden'); // แสดงการ์ดงบประมาณ
+
+                    const bTarget = budgetRow.target;
+                    const bActual = budgetRow.actual;
+                    
+                    let bCurrentPlanCum = 0;
+                    let bPreviousPlanCum = 0;
+                    if (currentQuarter >= 1) { bCurrentPlanCum += budgetRow.planQ1; bPreviousPlanCum = 0; }
+                    if (currentQuarter >= 2) { bCurrentPlanCum += budgetRow.planQ2; bPreviousPlanCum += budgetRow.planQ1; }
+                    if (currentQuarter >= 3) { bCurrentPlanCum += budgetRow.planQ3; bPreviousPlanCum += (budgetRow.planQ1 + budgetRow.planQ2); }
+                    if (currentQuarter >= 4) { bCurrentPlanCum += budgetRow.planQ4; bPreviousPlanCum += (budgetRow.planQ1 + budgetRow.planQ2 + budgetRow.planQ3); }
+
+                    let bStatus = "";
+                    let bDisplayPct = 0;
+
+                    if (bCurrentPlanCum === 0) {
+                        bStatus = "⚪ ไม่มีแผนเบิกจ่ายในขณะนี้";
+                    } else {
+                        if (bActual >= bCurrentPlanCum) {
+                            bStatus = "🟢 เป็นไปตามแผน";
+                            bDisplayPct = (bActual / bCurrentPlanCum) * 100;
+                        } else {
+                            if (!isLastMonthOfQuarter && currentQuarter > 1) {
+                                if (bActual >= bPreviousPlanCum) {
+                                    bStatus = `🟢 เป็นไปตามแผน (กำลังเบิกจ่าย Q${currentQuarter})`;
+                                    bDisplayPct = bPreviousPlanCum > 0 ? (bActual / bPreviousPlanCum) * 100 : 100;
+                                } else {
+                                    const pct = bPreviousPlanCum > 0 ? (bActual / bPreviousPlanCum) * 100 : 0;
+                                    bDisplayPct = pct;
+                                    bStatus = pct >= 50 ? "🟡 ล่าช้า" : "🔴 เสี่ยง";
+                                }
+                            } else {
+                                const pct = bCurrentPlanCum > 0 ? (bActual / bCurrentPlanCum) * 100 : 0;
+                                bDisplayPct = pct;
+                                bStatus = pct >= 50 ? "🟡 ล่าช้า" : "🔴 เสี่ยง";
+                            }
+                        }
+                    }
+
+                    // นำงบประมาณไปแสดงผล (ใส่ลูกน้ำและทศนิยม 2 ตำแหน่ง)
+                    document.getElementById('budget-target').innerHTML = `${formatMoney(bTarget)} <span class="text-xl font-bold text-amber-700/60 ml-1">${budgetRow.unit}</span>`;
+                    document.getElementById('budget-actual').innerHTML = `${formatMoney(bActual)} <span class="text-xl font-bold text-emerald-600/60 ml-1">${budgetRow.unit}</span>`;
+                    
+                    const bStatusEl = document.getElementById('budget-status');
+                    let bStatusText = bStatus;
+                    if (bCurrentPlanCum > 0) {
+                        bStatusText = `${bStatus} (${bDisplayPct > 100 ? 100 : bDisplayPct.toFixed(2)}%)`;
+                    }
+                    bStatusEl.textContent = bStatusText;
+                    bStatusEl.className = `inline-flex items-center justify-center px-4 py-2.5 rounded-xl text-md lg:text-lg font-bold border-2 w-full text-center leading-tight shadow-sm ${getStatusStyles(bStatus)}`;
+                }
+
+                // ==========================================
+                // 2. คำนวณภาพรวมผลงาน (ตัดงบประมาณออก ไม่ให้มาปนในกิจกรรม)
+                // ==========================================
+                const activities = allRows.filter(act => act.name !== "-" && !act.name.includes("โครงการพัฒนาทักษะ") && !act.name.includes("งบประมาณ"));
+                
                 const kpiActivities = activities.filter(act => act.name.includes("(KPI)"));
 
                 const totalTarget = kpiActivities.reduce((sum, act) => sum + act.target, 0);
@@ -267,7 +350,6 @@
                         projectStatus = "🟢 เป็นไปตามแผน";
                         displayPct = (totalActual / currentPlanCum) * 100;
                     } else {
-                        // เช็ก Grace Period (ถ้ายังไม่สิ้นไตรมาส ให้ดูแผนเก่าก่อน)
                         if (!isLastMonthOfQuarter && currentQuarter > 1) {
                             if (totalActual >= previousPlanCum) {
                                 projectStatus = `🟢 เป็นไปตามแผน (กำลังรันงาน Q${currentQuarter})`;
@@ -287,7 +369,7 @@
                     }
                 }
 
-                // นำไปแสดงผล
+                // นำไปแสดงผลในส่วน KPI กายภาพ
                 document.getElementById('kpi-target').innerHTML = `${formatNum(totalTarget)} <span class="text-xl sm:text-2xl font-bold text-indigo-700/70 ml-1">ราย</span>`;
                 document.getElementById('kpi-actual').innerHTML = `${formatNum(totalActual)} <span class="text-xl sm:text-2xl font-bold text-emerald-700/70 ml-1">ราย</span>`;
                 
@@ -301,17 +383,16 @@
 
                 setTimeout(() => { pieChart.style.background = `conic-gradient(${pieColor} 0% ${percentCum}%, #f1f5f9 ${percentCum}% 100%)`; }, 100);
 
-                // แสดงสถานะพร้อม % ต่อท้าย
                 const statusEl = document.getElementById('project-status');
                 let displayStatusText = projectStatus;
                 if (currentPlanCum > 0) {
                     displayStatusText = `${projectStatus} (${displayPct > 100 ? 100 : displayPct.toFixed(2)}%)`;
                 }
                 statusEl.textContent = displayStatusText;
-                statusEl.className = `inline-flex items-center justify-center px-4 py-3 rounded-xl text-[17px] sm:text-[19px] font-bold border-2 shadow-sm w-full bg-white ${getStatusStyles(projectStatus)}`;
+                statusEl.className = `inline-flex items-center justify-center px-4 py-3 rounded-xl text-[17px] sm:text-[19px] font-bold border-2 shadow-sm w-full bg-white leading-tight ${getStatusStyles(projectStatus)}`;
 
                 // ==========================================
-                // 3. กราฟแท่งรายไตรมาส (พร้อม % เทียบแผนสะสมของไตรมาสนั้นๆ)
+                // 3. กราฟแท่งรายไตรมาส
                 // ==========================================
                 const colors = ['bg-[#0ea5e9]', 'bg-[#16a34a]', 'bg-[#8b5cf6]', 'bg-[#f59e0b]'];
                 
@@ -369,7 +450,7 @@
                 });
 
                 setTimeout(() => {
-                    document.querySelectorAll('.bar-chart-col').forEach(bar => { bar.style.height = bar.getAttribute('data-h') + '%'; });
+                    document.querySelectorAll('.bar-chart-col').forEach(bar => { bar.style.width = bar.getAttribute('data-h') + '%'; });
                     document.querySelectorAll('.opacity-0').forEach(text => { text.classList.remove('opacity-0'); });
                 }, 100);
 
