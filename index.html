@@ -26,14 +26,19 @@
     <style>
         body { font-family: 'Sarabun', sans-serif; background-color: #fdfbf7; }
         .conic-chart { transition: background 1s ease-in-out; }
-        .bar-chart-col { transition: height 0.7s cubic-bezier(0.4, 0, 0.2, 1); width: 100%; }
-        .bar-chart-col-text { transition: left 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+        .bar-chart-col { transition: height 0.8s cubic-bezier(0.4, 0, 0.2, 1); width: 100%; }
+        .bar-chart-col-text { transition: bottom 0.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.8s ease-in; }
         @keyframes pulse-border {
             0% { box-shadow: 0 0 0 0 rgba(234, 179, 8, 0.4); }
             70% { box-shadow: 0 0 0 10px rgba(234, 179, 8, 0); }
             100% { box-shadow: 0 0 0 0 rgba(234, 179, 8, 0); }
         }
         .status-highlight { animation: pulse-border 2s infinite; }
+        
+        /* ซ่อน Scrollbar แต่อะลูมให้เลื่อนซ้ายขวาได้ */
+        .hide-scroll::-webkit-scrollbar { height: 6px; }
+        .hide-scroll::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 10px; }
+        .hide-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
     </style>
 </head>
 <body class="p-4 sm:p-6 lg:p-8 text-slate-800">
@@ -70,17 +75,17 @@
             </div>
         </div>
 
-        <div id="budget-section" class="hidden bg-amber-100 rounded-2xl shadow-md border border-amber-300 p-6 mb-8 relative border-l-4 border-l-amber-600">
-            <h3 class="text-lg font-bold mb-4 flex items-center text-amber-950 border-b border-amber-300 pb-2">
+        <div id="budget-section" class="hidden bg-gradient-to-br from-amber-100 to-amber-200 rounded-2xl shadow-md border border-amber-300 p-6 mb-8 relative border-l-4 border-l-amber-600">
+            <h3 class="text-lg font-bold mb-4 flex items-center text-amber-950 border-b border-amber-300/60 pb-2">
                 <svg class="w-6 h-6 mr-2 text-amber-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 งบประมาณโครงการ
             </h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="bg-white rounded-xl p-4 border border-amber-200 text-center shadow-sm flex flex-col justify-center">
+                <div class="bg-white/90 backdrop-blur-sm rounded-xl p-4 border border-amber-200 text-center shadow-sm flex flex-col justify-center">
                     <p class="text-sm font-bold text-slate-500 mb-2">งบประมาณที่ได้รับจัดสรร</p>
                     <h2 class="text-3xl lg:text-4xl font-extrabold text-amber-700" id="budget-target">-</h2>
                 </div>
-                <div class="bg-white rounded-xl p-4 border border-amber-200 text-center shadow-sm flex flex-col justify-center">
+                <div class="bg-white/90 backdrop-blur-sm rounded-xl p-4 border border-amber-200 text-center shadow-sm flex flex-col justify-center">
                     <p class="text-sm font-bold text-slate-500 mb-2">ผลการเบิกจ่ายสะสม</p>
                     <h2 class="text-3xl lg:text-4xl font-extrabold text-emerald-600" id="budget-actual">-</h2>
                 </div>
@@ -127,27 +132,27 @@
             </div>
         </div>
 
-        <div class="bg-white rounded-2xl shadow-md border border-slate-200 p-6 mb-8 flex flex-col w-full">
-            <h3 class="text-lg md:text-xl font-bold mb-4 flex items-center text-slate-800 border-b border-slate-100 pb-3">
-                <svg class="w-6 h-6 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+        <div class="bg-gradient-to-br from-white to-slate-50 rounded-3xl shadow-lg border-2 border-slate-200 p-6 md:p-8 mb-10 flex flex-col w-full">
+            <h3 class="text-xl md:text-2xl font-bold mb-6 flex items-center text-slate-800 border-b border-slate-200 pb-4">
+                <svg class="w-7 h-7 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
                 ผลการดำเนินงาน (กิจกรรม KPI) และการใช้จ่ายงบประมาณ สะสมรายไตรมาส
             </h3>
             
-            <div class="flex flex-wrap justify-center gap-x-6 gap-y-3 mb-6 mt-2 text-sm font-bold text-slate-600">
-                <div class="flex items-center"><div class="w-4 h-4 bg-blue-200 border border-blue-300 mr-2 rounded-sm"></div> แผนการดำเนินงาน</div>
-                <div class="flex items-center"><div class="w-4 h-4 bg-blue-500 mr-2 rounded-sm shadow-sm"></div> ผลการดำเนินงาน</div>
-                <div class="flex items-center"><div class="w-4 h-4 bg-emerald-200 border border-emerald-300 mr-2 rounded-sm"></div> แผนการใช้จ่ายงบประมาณ</div>
-                <div class="flex items-center"><div class="w-4 h-4 bg-emerald-500 mr-2 rounded-sm shadow-sm"></div> ผลการใช้จ่ายงบประมาณ</div>
+            <div class="flex flex-wrap justify-center gap-x-6 gap-y-3 mb-10 mt-2 text-sm font-bold text-slate-700">
+                <div class="flex items-center"><div class="w-4 h-4 bg-green-200 border border-green-300 mr-2 rounded-sm"></div> แผนการดำเนินงาน</div>
+                <div class="flex items-center"><div class="w-4 h-4 bg-green-500 mr-2 rounded-sm shadow-sm"></div> ผลการดำเนินงาน</div>
+                <div class="flex items-center"><div class="w-4 h-4 bg-amber-200 border border-amber-300 mr-2 rounded-sm"></div> แผนการใช้จ่ายงบประมาณ</div>
+                <div class="flex items-center"><div class="w-4 h-4 bg-amber-500 mr-2 rounded-sm shadow-sm"></div> ผลการใช้จ่ายงบประมาณ</div>
             </div>
 
-            <div class="flex-grow pt-10 relative h-80 w-full overflow-x-auto overflow-y-hidden">
-                <div class="absolute inset-0 top-12 bottom-8 border-b-2 border-slate-300 flex items-end justify-around px-2 min-w-[600px]" id="combined-bar-chart-container">
+            <div class="flex-grow pt-16 relative h-[400px] w-full overflow-x-auto hide-scroll">
+                <div class="absolute inset-0 top-16 bottom-8 border-b-2 border-slate-300 flex items-end justify-around px-2 min-w-[700px]" id="combined-bar-chart-container">
                     </div>
             </div>
         </div>
 
-        <div class="bg-amber-100 rounded-2xl shadow-md border border-amber-300 p-6 mb-8">
-            <h3 class="text-lg font-bold mb-6 flex items-center border-b border-amber-300 pb-3 text-amber-950">
+        <div class="bg-amber-50 rounded-2xl shadow-md border border-amber-200 p-6 mb-8">
+            <h3 class="text-lg font-bold mb-6 flex items-center border-b border-amber-200 pb-3 text-amber-950">
                 <svg class="w-5 h-5 mr-2 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
                 ภาพรวมสถานะกิจกรรมทั้งหมด (อ้างอิงไตรมาสปัจจุบัน)
             </h3>
@@ -213,10 +218,9 @@
 
         document.addEventListener('DOMContentLoaded', async () => {
             try {
-                // แก้ไขปัญหาชื่อโครงการไม่ขึ้น (ย้ายมาไว้บรรทัดแรกสุด)
+                // แก้ไขปัญหาชื่อโครงการ
                 document.getElementById('project-name').textContent = "โครงการพัฒนาทักษะและแนวคิดผู้ประกอบการธุรกิจเกษตร (เกษตรกรปราดเปรื่อง (Smart Farmer)) ปีงบประมาณ 2569";
                 
-                // เซ็ตเลขไตรมาสอัตโนมัติ
                 document.querySelectorAll('.display-quarter').forEach(el => el.textContent = currentQuarter);
 
                 const formatNum = (num) => new Intl.NumberFormat('th-TH').format(num);
@@ -431,9 +435,9 @@
                     }
                 ];
 
-                // หาระยะสูงสุดของแต่ละประเภทแยกกัน เพื่อให้แท่งไม่โดนบีบแบน
-                const maxP = Math.max(...qData.map(d => Math.max(d.pPlan, d.pAct))) * 1.2 || 1; 
-                const maxB = Math.max(...qData.map(d => Math.max(d.bPlan, d.bAct))) * 1.2 || 1; 
+                // หาระยะสูงสุดของแต่ละประเภทแยกกัน และเผื่อที่ว่างด้านบน 15% ให้ตัวเลขไม่ทะลุกรอบ
+                const maxP = Math.max(...qData.map(d => Math.max(d.pPlan, d.pAct))) * 1.15 || 1; 
+                const maxB = Math.max(...qData.map(d => Math.max(d.bPlan, d.bAct))) * 1.15 || 1; 
 
                 const barContainer = document.getElementById('combined-bar-chart-container');
                 barContainer.innerHTML = '';
@@ -445,55 +449,56 @@
                     const baH = q.showActual ? (q.bAct / maxB) * 100 : 0;
                     
                     barContainer.innerHTML += `
-                        <div class="flex flex-col items-center w-1/4 h-full justify-end">
-                            <div class="flex items-end space-x-1 sm:space-x-2 h-full w-full justify-center relative pb-0">
+                        <div class="flex flex-col items-center w-1/4 h-full justify-end relative">
+                            <div class="flex items-end space-x-1 sm:space-x-2 h-full w-full justify-center relative pb-0 z-10">
                                 
-                                <div class="flex flex-col items-center justify-end h-full relative w-4 sm:w-8 md:w-10">
-                                    <div class="absolute flex flex-col items-center pb-1 opacity-0 transition-opacity duration-700 delay-300 z-10" style="bottom: ${ppH}%">
-                                        <span class="text-[9px] sm:text-[10px] font-bold text-blue-800">${formatNum(q.pPlan)}</span>
+                                <div class="flex flex-col items-center justify-end h-full relative w-5 sm:w-10 md:w-14">
+                                    <div class="absolute flex flex-col items-center pb-2 opacity-0 bar-chart-col-text z-20" style="bottom: ${ppH}%">
+                                        <span class="text-[10px] sm:text-xs font-bold text-green-700">${formatNum(q.pPlan)}</span>
                                     </div>
-                                    <div class="w-full bg-blue-200 border border-blue-300 rounded-t-sm bar-chart-col" style="height: 0%" data-h="${ppH}"></div>
+                                    <div class="w-full bg-green-200 border border-green-300 rounded-t-sm bar-chart-col" style="height: 0%" data-h="${ppH}"></div>
                                 </div>
                                 
                                 ${q.showActual ? `
-                                <div class="flex flex-col items-center justify-end h-full relative w-4 sm:w-8 md:w-10">
-                                    <div class="absolute flex flex-col items-center pb-1 opacity-0 transition-opacity duration-700 delay-300 z-20" style="bottom: ${paH}%">
-                                        <span class="bg-blue-600 text-white text-[9px] px-1 rounded shadow-sm mb-0.5">${q.pPct}%</span>
-                                        <span class="text-[9px] sm:text-[10px] font-bold text-blue-900">${formatNum(q.pAct)}</span>
+                                <div class="flex flex-col items-center justify-end h-full relative w-5 sm:w-10 md:w-14">
+                                    <div class="absolute flex flex-col items-center pb-2 opacity-0 bar-chart-col-text z-30" style="bottom: ${paH}%">
+                                        <span class="bg-green-600 text-white text-[9px] sm:text-[10px] px-1.5 rounded shadow-sm mb-1">${q.pPct}%</span>
+                                        <span class="text-[10px] sm:text-xs font-bold text-green-900">${formatNum(q.pAct)}</span>
                                     </div>
-                                    <div class="w-full bg-blue-500 rounded-t-sm bar-chart-col shadow-sm" style="height: 0%" data-h="${paH}"></div>
+                                    <div class="w-full bg-green-500 rounded-t-sm bar-chart-col shadow-sm" style="height: 0%" data-h="${paH}"></div>
                                 </div>
-                                ` : `<div class="w-4 sm:w-8 md:w-10 bg-transparent"></div>`}
+                                ` : `<div class="w-5 sm:w-10 md:w-14 bg-transparent"></div>`}
                                 
-                                <div class="w-2 sm:w-4"></div>
+                                <div class="w-2 sm:w-5"></div>
 
-                                <div class="flex flex-col items-center justify-end h-full relative w-4 sm:w-8 md:w-10">
-                                    <div class="absolute flex flex-col items-center pb-1 opacity-0 transition-opacity duration-700 delay-300 z-10" style="bottom: ${bpH}%">
-                                        <span class="text-[9px] sm:text-[10px] font-bold text-emerald-800">${formatNum(q.bPlan)}</span>
+                                <div class="flex flex-col items-center justify-end h-full relative w-5 sm:w-10 md:w-14">
+                                    <div class="absolute flex flex-col items-center pb-2 opacity-0 bar-chart-col-text z-20" style="bottom: ${bpH}%">
+                                        <span class="text-[10px] sm:text-xs font-bold text-amber-700">${formatNum(q.bPlan)}</span>
                                     </div>
-                                    <div class="w-full bg-emerald-200 border border-emerald-300 rounded-t-sm bar-chart-col" style="height: 0%" data-h="${bpH}"></div>
+                                    <div class="w-full bg-amber-200 border border-amber-300 rounded-t-sm bar-chart-col" style="height: 0%" data-h="${bpH}"></div>
                                 </div>
 
                                 ${q.showActual ? `
-                                <div class="flex flex-col items-center justify-end h-full relative w-4 sm:w-8 md:w-10">
-                                    <div class="absolute flex flex-col items-center pb-1 opacity-0 transition-opacity duration-700 delay-300 z-20" style="bottom: ${baH}%">
-                                        <span class="bg-emerald-600 text-white text-[9px] px-1 rounded shadow-sm mb-0.5">${q.bPct}%</span>
-                                        <span class="text-[9px] sm:text-[10px] font-bold text-emerald-900">${formatNum(q.bAct)}</span>
+                                <div class="flex flex-col items-center justify-end h-full relative w-5 sm:w-10 md:w-14">
+                                    <div class="absolute flex flex-col items-center pb-2 opacity-0 bar-chart-col-text z-30" style="bottom: ${baH}%">
+                                        <span class="bg-amber-600 text-white text-[9px] sm:text-[10px] px-1.5 rounded shadow-sm mb-1">${q.bPct}%</span>
+                                        <span class="text-[10px] sm:text-xs font-bold text-amber-900">${formatNum(q.bAct)}</span>
                                     </div>
-                                    <div class="w-full bg-emerald-500 rounded-t-sm bar-chart-col shadow-sm" style="height: 0%" data-h="${baH}"></div>
+                                    <div class="w-full bg-amber-500 rounded-t-sm bar-chart-col shadow-sm" style="height: 0%" data-h="${baH}"></div>
                                 </div>
-                                ` : `<div class="w-4 sm:w-8 md:w-10 bg-transparent"></div>`}
+                                ` : `<div class="w-5 sm:w-10 md:w-14 bg-transparent"></div>`}
                                 
                             </div>
-                            <div class="mt-3 text-sm font-bold text-slate-800">${q.name}</div>
+                            <div class="mt-4 text-sm font-bold text-slate-800">${q.name}</div>
                         </div>
                     `;
                 });
 
+                // แอนิเมชันให้แท่งกราฟและตัวเลขโผล่ขึ้นมาพร้อมกันอย่างสมูท
                 setTimeout(() => {
                     document.querySelectorAll('.bar-chart-col').forEach(bar => { bar.style.height = bar.getAttribute('data-h') + '%'; });
-                    document.querySelectorAll('.bar-chart-col-text').forEach(textEl => { textEl.style.left = textEl.getAttribute('data-left') + '%'; });
-                }, 100);
+                    document.querySelectorAll('.bar-chart-col-text').forEach(text => { text.classList.remove('opacity-0'); });
+                }, 150);
 
                 // ==========================================
                 // 4. การ์ดสรุปสถานะกิจกรรมทั้งหมด
