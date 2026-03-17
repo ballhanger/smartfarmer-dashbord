@@ -59,49 +59,58 @@
         .hover-glow-amber:hover { box-shadow: 0 20px 40px -10px rgba(245, 158, 11, 0.3); }
 
         /* ==========================================
-           ระบบจัดการ Print & Export PDF (ปรับแก้สมบูรณ์ 100%)
+           ระบบ Print CSS (แก้ปัญหาหน้าขาว & กราฟล้น 100%)
            ========================================== */
         @media print {
-            /* บังคับสีพื้นหลังให้ติดไปใน PDF */
-            body { background-color: #f8fafc !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            /* 1. แก้หน้าจอขาว โดยปลดล็อก overflow ทั้งหมด */
+            html, body { 
+                overflow: visible !important; 
+                height: auto !important; 
+                background-color: #f8fafc !important; 
+                -webkit-print-color-adjust: exact !important; 
+                print-color-adjust: exact !important; 
+            }
+            * { overflow: visible !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             
             /* ซ่อนปุ่มต่างๆ */
             .no-print { display: none !important; }
-            .hide-scroll::-webkit-scrollbar { display: none !important; }
             
-            /* บังคับกระดาษแนวนอน A4 */
-            @page { size: landscape; margin: 10mm; }
+            /* บังคับกระดาษ A4 แนวนอน */
+            @page { size: A4 landscape; margin: 10mm; }
             
-            /* จัดความกว้างให้พอดีหน้า A4 */
-            .max-w-7xl { max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
+            /* บังคับคอนเทนเนอร์หลักให้ไม่เกินหน้ากระดาษ */
+            .max-w-7xl { max-width: 100% !important; margin: 0 !important; padding: 0 !important; width: 100% !important; }
             
-            /* 🔥 แก้ปัญหากราฟโดนตัดขวา 🔥 */
-            .overflow-x-auto { overflow: visible !important; }
+            /* 2. บีบกราฟแท่งให้พอดีหน้าจอ */
             #combined-bar-chart-container { 
-                min-width: 100% !important; /* ปลดล็อก 1200px ทำให้หดเข้าหาจอ A4 ได้ */
-                width: 100% !important;
+                min-width: 100% !important; 
+                width: 100% !important; 
+                height: 300px !important; /* ลดความสูงลงไม่ให้ล้นหน้า */
+                justify-content: space-around !important; /* กระจายช่องไฟให้สวย */
             }
-
-            /* 🔥 บังคับโชว์ตัวเลขบนกราฟทั้งหมด (เพราะตอนปริ้นเอาเมาส์ชี้ไม่ได้) 🔥 */
+            
+            /* ลดขนาดแท่งและป้ายตอนปริ้น จะได้ไม่เบียดกัน */
+            .group\/item { width: 35px !important; } 
+            
+            /* 3. บังคับโชว์ตัวเลขบนแท่งกราฟทั้งหมด */
             .bar-chart-col-text {
                 opacity: 1 !important; 
-                transform: translateY(-5px) !important;
+                transform: translateY(-2px) !important;
+            }
+            .bar-chart-col-text span {
+                font-size: 9px !important;
+                padding: 1px 4px !important;
             }
 
-            /* ป้องกันบล็อกขาดครึ่งหน้า */
-            .page-break-avoid { page-break-inside: avoid; break-inside: avoid; }
-            
-            /* ปิดแอนิเมชันตอนปริ้น กันภาพแหว่ง */
-            * { transition: none !important; animation: none !important; }
+            /* ป้องกันการโดนตัดกลางบล็อกตอนขึ้นหน้าใหม่ */
+            .page-break-avoid { page-break-inside: avoid !important; break-inside: avoid !important; margin-bottom: 20px !important; }
         }
     </style>
 </head>
 <body class="p-4 sm:p-6 lg:p-8 text-slate-800">
     
     <div class="max-w-7xl mx-auto">
-        
-        <header class="mb-8 border-b-4 border-kaset-600 pb-4 fade-in-up flex flex-col md:flex-row md:justify-between md:items-end gap-4">
+        <header class="mb-8 border-b-4 border-kaset-600 pb-4 fade-in-up flex flex-col md:flex-row md:justify-between md:items-end gap-4 page-break-avoid">
             <div>
                 <p class="text-lg md:text-xl font-semibold text-slate-500 mb-1">Dashboard รายงานความก้าวหน้า</p>
                 <h1 id="project-name" class="text-xl md:text-2xl font-extrabold text-slate-800 leading-relaxed tracking-tight">กำลังโหลดข้อมูล...</h1>
