@@ -57,72 +57,17 @@
         .hover-glow-indigo:hover { box-shadow: 0 20px 40px -10px rgba(79, 70, 229, 0.3); }
         .hover-glow-emerald:hover { box-shadow: 0 20px 40px -10px rgba(16, 185, 129, 0.3); }
         .hover-glow-amber:hover { box-shadow: 0 20px 40px -10px rgba(245, 158, 11, 0.3); }
-
-        /* ==========================================
-           ระบบ Print CSS (แก้ปัญหาหน้าขาว & กราฟล้น 100%)
-           ========================================== */
-        @media print {
-            /* 1. แก้หน้าจอขาว โดยปลดล็อก overflow ทั้งหมด */
-            html, body { 
-                overflow: visible !important; 
-                height: auto !important; 
-                background-color: #f8fafc !important; 
-                -webkit-print-color-adjust: exact !important; 
-                print-color-adjust: exact !important; 
-            }
-            * { overflow: visible !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-            
-            /* ซ่อนปุ่มต่างๆ */
-            .no-print { display: none !important; }
-            
-            /* บังคับกระดาษ A4 แนวนอน */
-            @page { size: A4 landscape; margin: 10mm; }
-            
-            /* บังคับคอนเทนเนอร์หลักให้ไม่เกินหน้ากระดาษ */
-            .max-w-7xl { max-width: 100% !important; margin: 0 !important; padding: 0 !important; width: 100% !important; }
-            
-            /* 2. บีบกราฟแท่งให้พอดีหน้าจอ */
-            #combined-bar-chart-container { 
-                min-width: 100% !important; 
-                width: 100% !important; 
-                height: 300px !important; /* ลดความสูงลงไม่ให้ล้นหน้า */
-                justify-content: space-around !important; /* กระจายช่องไฟให้สวย */
-            }
-            
-            /* ลดขนาดแท่งและป้ายตอนปริ้น จะได้ไม่เบียดกัน */
-            .group\/item { width: 35px !important; } 
-            
-            /* 3. บังคับโชว์ตัวเลขบนแท่งกราฟทั้งหมด */
-            .bar-chart-col-text {
-                opacity: 1 !important; 
-                transform: translateY(-2px) !important;
-            }
-            .bar-chart-col-text span {
-                font-size: 9px !important;
-                padding: 1px 4px !important;
-            }
-
-            /* ป้องกันการโดนตัดกลางบล็อกตอนขึ้นหน้าใหม่ */
-            .page-break-avoid { page-break-inside: avoid !important; break-inside: avoid !important; margin-bottom: 20px !important; }
-        }
     </style>
 </head>
 <body class="p-4 sm:p-6 lg:p-8 text-slate-800">
     
     <div class="max-w-7xl mx-auto">
-        <header class="mb-8 border-b-4 border-kaset-600 pb-4 fade-in-up flex flex-col md:flex-row md:justify-between md:items-end gap-4 page-break-avoid">
-            <div>
-                <p class="text-lg md:text-xl font-semibold text-slate-500 mb-1">Dashboard รายงานความก้าวหน้า</p>
-                <h1 id="project-name" class="text-xl md:text-2xl font-extrabold text-slate-800 leading-relaxed tracking-tight">กำลังโหลดข้อมูล...</h1>
-            </div>
-            
-            <button onclick="window.print()" class="no-print bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white font-bold py-2.5 px-6 rounded-xl shadow-[0_8px_15px_rgba(79,70,229,0.3)] hover:shadow-[0_15px_20px_rgba(79,70,229,0.4)] transition-all duration-300 flex items-center justify-center transform hover:-translate-y-1">
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                ดาวน์โหลดรายงาน (PDF)
-            </button>
+        <header class="mb-8 border-b-4 border-kaset-600 pb-4 fade-in-up">
+            <p class="text-lg md:text-xl font-semibold text-slate-500 mb-1">Dashboard รายงานความก้าวหน้า</p>
+            <h1 id="project-name" class="text-xl md:text-2xl font-extrabold text-slate-800 leading-relaxed tracking-tight">กำลังโหลดข้อมูล...</h1>
         </header>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 fade-in-up delay-100 page-break-avoid">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 fade-in-up delay-100">
             <div class="group bg-gradient-to-br from-indigo-100 to-indigo-50 rounded-[1.5rem] shadow-md border border-indigo-200 p-6 sm:p-8 flex flex-col relative border-l-[6px] border-l-indigo-600 min-h-[160px] transform transition-all duration-500 hover:-translate-y-2 hover-glow-indigo overflow-hidden cursor-default">
                 <div class="w-full text-left z-10 mb-2">
                     <p class="text-base sm:text-lg font-bold text-indigo-900">เป้าหมายโครงการ <span class="text-sm font-medium text-indigo-700/80 block sm:inline mt-1 sm:mt-0">(เป้าหมายจาก พรบ.69 เฉพาะ KPI)</span></p>
@@ -148,7 +93,7 @@
             </div>
         </div>
 
-        <div id="budget-section" class="hidden fade-in-up delay-200 page-break-avoid bg-gradient-to-br from-amber-100 via-amber-200/50 to-amber-50 rounded-[1.5rem] shadow-md border border-amber-300 p-6 sm:p-8 mb-8 relative border-l-[6px] border-l-amber-600 transform transition-all duration-500 hover:-translate-y-1.5 hover-glow-amber">
+        <div id="budget-section" class="hidden fade-in-up delay-200 bg-gradient-to-br from-amber-100 via-amber-200/50 to-amber-50 rounded-[1.5rem] shadow-md border border-amber-300 p-6 sm:p-8 mb-8 relative border-l-[6px] border-l-amber-600 transform transition-all duration-500 hover:-translate-y-1.5 hover-glow-amber">
             <h3 class="text-lg sm:text-xl font-bold mb-5 flex items-center text-amber-950 border-b border-amber-400/50 pb-3">
                 <svg class="w-7 h-7 mr-3 text-amber-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 งบประมาณโครงการ
@@ -165,7 +110,7 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 fade-in-up delay-300 page-break-avoid">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 fade-in-up delay-300">
             <div class="group bg-gradient-to-b from-purple-100 to-purple-50 rounded-[1.5rem] shadow-md border border-purple-200 p-6 sm:p-8 flex flex-col justify-between transform transition-all duration-500 hover:-translate-y-2 hover-glow">
                 <h3 class="text-lg font-bold mb-4 flex items-center text-purple-950">
                     <svg class="w-6 h-6 mr-2 text-purple-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path></svg>
@@ -205,7 +150,7 @@
             </div>
         </div>
 
-        <div class="fade-in-up delay-400 page-break-avoid bg-gradient-to-br from-slate-100 via-indigo-100/40 to-slate-200 rounded-[2rem] shadow-lg border border-slate-300 p-4 sm:p-6 md:p-8 mb-10 flex flex-col w-full transform transition-all duration-500 hover:shadow-xl">
+        <div class="fade-in-up delay-400 bg-gradient-to-br from-slate-100 via-indigo-100/40 to-slate-200 rounded-[2rem] shadow-lg border border-slate-300 p-4 sm:p-6 md:p-8 mb-10 flex flex-col w-full transform transition-all duration-500 hover:shadow-xl overflow-hidden">
             <h3 class="text-xl md:text-2xl font-extrabold mb-2 flex items-center text-indigo-950 border-b border-slate-300 pb-4">
                 <svg class="w-7 h-7 mr-3 text-indigo-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
                 ผลการดำเนินงาน (กิจกรรม KPI) และการใช้จ่ายงบประมาณ สะสมรายไตรมาส
@@ -224,7 +169,7 @@
             </div>
         </div>
 
-        <div class="fade-in-up delay-500 page-break-avoid bg-gradient-to-br from-indigo-100/90 via-blue-50 to-purple-100/90 rounded-[2rem] shadow-lg border border-white p-6 md:p-8 mb-10 backdrop-blur-md transform transition-all duration-500 hover:shadow-xl">
+        <div class="fade-in-up delay-500 bg-gradient-to-br from-indigo-100/90 via-blue-50 to-purple-100/90 rounded-[2rem] shadow-lg border border-white p-6 md:p-8 mb-10 backdrop-blur-md transform transition-all duration-500 hover:shadow-xl">
             <h3 class="text-xl md:text-2xl font-extrabold mb-6 flex items-center border-b border-indigo-200/70 pb-4 text-indigo-950">
                 <svg class="w-7 h-7 mr-3 text-indigo-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
                 ภาพรวมสถานะกิจกรรมทั้งหมด (อ้างอิงไตรมาสปัจจุบัน)
@@ -233,7 +178,7 @@
             </div>
         </div>
 
-        <div class="fade-in-up delay-500 page-break-avoid bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-slate-200 overflow-hidden mb-10 transform transition-all duration-500 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
+        <div class="fade-in-up delay-500 bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-slate-200 overflow-hidden mb-10 transform transition-all duration-500 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
             <div class="p-6 sm:p-8 border-b border-slate-100 bg-slate-50/80">
                 <h3 class="text-lg sm:text-xl font-bold flex items-center text-slate-800">
                     <svg class="w-6 h-6 mr-3 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
@@ -258,7 +203,7 @@
             </div>
         </div>
 
-        <div class="fade-in-up delay-500 page-break-avoid bg-gradient-to-br from-rose-50 to-white rounded-3xl shadow-sm border border-rose-200 p-6 sm:p-8 mb-12 transform transition-all duration-500 hover:-translate-y-1 hover:shadow-lg">
+        <div class="fade-in-up delay-500 bg-gradient-to-br from-rose-50 to-white rounded-3xl shadow-sm border border-rose-200 p-6 sm:p-8 mb-12 transform transition-all duration-500 hover:-translate-y-1 hover:shadow-lg">
             <h3 class="text-lg sm:text-xl font-bold mb-6 flex items-center border-b border-rose-200/80 pb-4 text-rose-950">
                 <svg class="w-6 h-6 mr-3 text-rose-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
                 ปัญหาและอุปสรรคในการดำเนินงาน
